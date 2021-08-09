@@ -37,17 +37,6 @@ func NewCmdRootFile(meta *generator.Meta) (generator.Generator, error) {
 	}, nil
 }
 
-func (f *CmdRootFile) PreGenerate() error {
-	err := f.BaseGenerator.PreGenerate()
-	if err != nil {
-		return err
-	}
-
-	// package a should be aliased to "b"
-	f.JenFile.ImportName(CobraImportPath, "cobra")
-	return nil
-}
-
 func (f CmdRootFile) GetGenCodeFuncs() []func() {
 	return []func(){
 		f.genConst,
