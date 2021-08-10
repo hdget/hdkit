@@ -136,7 +136,7 @@ func (f *GrpcHandlersFile) genGrpcServeMethod(method parser.Method) {
 		),
 	}
 
-	typeAsserts := f.TypeAssert("response", "resp", f.PbDir, method.Results[0].Type, "type assert error")
+	typeAsserts := f.TypeAssert("response", "resp", f.PbDir, method.Results[0].Type, "server grpc: type assert error")
 	body = append(body, typeAsserts...)
 	body = append(body, []jen.Code{
 		jen.Return(jen.Id("response"), jen.Nil()),
