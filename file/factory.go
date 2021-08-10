@@ -3,6 +3,7 @@ package file
 import (
 	"github.com/hdget/hdkit/file/autogen/grpc"
 	"github.com/hdget/hdkit/file/cmd"
+	"github.com/hdget/hdkit/file/g"
 	"github.com/hdget/hdkit/file/service"
 	"github.com/hdget/hdkit/generator"
 )
@@ -72,6 +73,7 @@ func (sf *ServiceFactory) getNewFileFuncs() []NewFileFunc {
 		grpc.NewHandlersFile,    // autogen/grpc/handlers.go
 		cmd.NewCmdRootFile,      // cmd/root.go
 		cmd.NewCmdRunServerFile, // cmd/run.go
+		g.NewGConfigFile,        // g/config.go
 		NewMainFile,             // main.go
 	}
 }

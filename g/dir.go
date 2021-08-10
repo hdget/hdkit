@@ -11,6 +11,7 @@ const (
 	_ DirType = iota
 	Binary
 	Proto
+	Global
 	Service
 	Pb
 	Grpc
@@ -24,6 +25,7 @@ var (
 	dirTokens = map[DirType][]string{
 		Binary:  []string{"bin"},
 		Proto:   []string{"proto"},
+		Global:  []string{"g"}, // global directory which stores config, error
 		Service: []string{"service"},
 		Pb:      []string{"autogen", "pb"},
 		Grpc:    []string{"autogen", "grpc"},
@@ -47,6 +49,7 @@ func GetProjectDirs(rootDir string) map[DirType]string {
 		gDirs = map[DirType]string{
 			Binary:  buildDir(rootDir, dirTokens[Binary]),
 			Proto:   buildDir(rootDir, dirTokens[Proto]),
+			Global:  buildDir(rootDir, dirTokens[Global]),
 			Service: buildDir(rootDir, dirTokens[Service]),
 			Pb:      buildDir(rootDir, dirTokens[Pb]),
 			Grpc:    buildDir(rootDir, dirTokens[Grpc]),

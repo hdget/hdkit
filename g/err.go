@@ -12,4 +12,5 @@ var (
 	ErrMethodNotFound             = errors.New("method not found")
 	ErrVarNotFound                = errors.New("var not found")
 	ErrConstNotFound              = errors.New("const not found")
+	ErrStructureNotFound          = errors.New("structure not found")
 )

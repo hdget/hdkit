@@ -23,7 +23,7 @@ type BaseGenerator struct {
 	Filename  string // Filename for output file
 	overwrite bool   // if the file need to be overwrite or appended
 
-	JenFile           *jen.File     // empty go file
+	JenFile           *jen.File     // original go file
 	ParsedFile        *parser.File  // go file -> parsed file
 	sourceFileContent *bytes.Buffer // source file content
 
@@ -39,7 +39,6 @@ func NewBaseGenerator(dir, filename string, overwrite bool, args ...string) (*Ba
 	if len(args) > 0 {
 		pkg = args[0]
 	}
-
 	// if specified package name then use NewFile to create jen.JenFile
 	// or it will use the basename of the Dir as package name
 	var jenFile *jen.File
@@ -183,6 +182,20 @@ func (bg *BaseGenerator) FindMethod(methodName string) (*parser.Method, error) {
 	}
 	if found == nil {
 		return nil, errors.Wrap(g.ErrMethodNotFound, methodName)
+	}
+	return found, nil
+}
+
+func (bg *BaseGenerator) FindStructure(structureName string) (*parser.Struct, error) {
+	var found *parser.Struct
+	for i, v := range bg.ParsedFile.Structures {
+		if v.Name == structureName {
+			found = &bg.ParsedFile.Structures[i]
+			break
+		}
+	}
+	if found == nil {
+		return nil, errors.Wrap(g.ErrStructureNotFound, structureName)
 	}
 	return found, nil
 }
@@ -383,11 +396,9 @@ func (bg *BaseGenerator) Deference(v string) string {
 // Save forced will overwrite the file
 func (bg *BaseGenerator) save() error {
 	var data string
-	if bg.overwrite {
-		// here must use GoString, if using Builder.String() it will lost `package`
-		data = bg.JenFile.GoString()
-	} else {
-		// generate jen.file data to buffer
+
+	data = bg.JenFile.GoString()
+	if !bg.overwrite && bg.sourceFileContent.Len() > 0 {
 		bg.sourceFileContent.WriteString("\n")
 		bg.sourceFileContent.WriteString(bg.Builder.String())
 		data = bg.sourceFileContent.String()
@@ -404,31 +415,4 @@ func (bg *BaseGenerator) save() error {
 	}
 
 	return nil
-}
-
-//nolint: unused
-func (bg *BaseGenerator) getMissingImports(imp []parser.NamedTypeValue, f *parser.File) ([]parser.NamedTypeValue, error) {
-	n := []parser.NamedTypeValue{}
-	for _, v := range imp {
-		for i, vo := range f.Imports {
-			if vo.Name == "" {
-				tp, err := strconv.Unquote(vo.Type)
-				if err != nil {
-					return n, err
-				}
-				if v.Type == vo.Type && strings.HasSuffix(tp, v.Name) {
-					break
-				}
-			}
-			if v.Type == vo.Type && v.Name == vo.Name {
-				break
-			} else if i == len(f.Imports)-1 {
-				n = append(n, v)
-			}
-		}
-	}
-	if len(f.Imports) == 0 {
-		n = imp
-	}
-	return n, nil
 }

@@ -32,18 +32,6 @@ func NewServiceFile(meta *generator.Meta) (generator.Generator, error) {
 	}, nil
 }
 
-func (f *ServiceFile) PreGenerate() error {
-	err := f.BaseGenerator.PreGenerate()
-	if err != nil {
-		return err
-	}
-
-	// package a should be aliased to "b"
-	f.JenFile.ImportName("context", "context")
-	f.JenFile.ImportName(f.PbDir, "pb")
-	return nil
-}
-
 func (f *ServiceFile) GetGenCodeFuncs() []func() {
 	return []func(){
 		f.genServiceStruct,
@@ -53,17 +41,11 @@ func (f *ServiceFile) GetGenCodeFuncs() []func() {
 }
 
 func (f *ServiceFile) genServiceStruct() {
-	if f.ParsedFile != nil {
-		for _, v := range f.ParsedFile.Structures {
-			if v.Name == f.Meta.SvcStructName {
-				fmt.Printf("%s: structure `%s` already exists,  skip\n", f.Filename, f.Meta.SvcStructName)
-				return
-			}
-		}
+	found, _ := f.FindStructure(f.Meta.SvcStructName)
+	if found == nil {
+		f.Builder.AppendStruct(f.Meta.SvcStructName)
+		f.genVarSvcStructImplService()
 	}
-
-	f.Builder.AppendStruct(f.Meta.SvcStructName)
-	f.genVarSvcStructImplService()
 }
 
 // genVarSvcStructImplService add fake var definition which will give error prompts
@@ -78,31 +60,27 @@ func (f *ServiceFile) genVarSvcStructImplService() {
 func (f ServiceFile) genNewServiceFunction() {
 	funcName := fmt.Sprintf("New%s", utils.ToCamelCase(f.Meta.RawSvcName))
 
-	for _, v := range f.ParsedFile.Methods {
-		if v.Name == funcName {
-			fmt.Printf("%s: function `%s` already exists, skip\n", f.Filename, v.Name)
-			return
+	found, _ := f.FindMethod(funcName)
+	if found == nil {
+		f.Builder.Raw().Commentf(
+			"%s returns a naive, stateless implementation of %s.",
+			funcName,
+			f.Meta.SvcServerInterfaceName,
+		).Line()
+		body := []jen.Code{
+			jen.Return(jen.Id(fmt.Sprintf("&%s{}", f.Meta.SvcStructName))),
 		}
+		f.Builder.AppendFunction(
+			funcName,
+			nil,
+			[]jen.Code{},
+			[]jen.Code{jen.Qual(f.PbDir, f.Meta.SvcServerInterfaceName)},
+			"",
+			body...,
+		)
+		f.Builder.NewLine()
+		f.Builder.NewLine()
 	}
-
-	f.Builder.Raw().Commentf(
-		"%s returns a naive, stateless implementation of %s.",
-		funcName,
-		f.Meta.SvcServerInterfaceName,
-	).Line()
-	body := []jen.Code{
-		jen.Return(jen.Id(fmt.Sprintf("&%s{}", f.Meta.SvcStructName))),
-	}
-	f.Builder.AppendFunction(
-		funcName,
-		nil,
-		[]jen.Code{},
-		[]jen.Code{jen.Qual(f.PbDir, f.Meta.SvcServerInterfaceName)},
-		"",
-		body...,
-	)
-	f.Builder.NewLine()
-	f.Builder.NewLine()
 }
 
 func (f ServiceFile) genServiceMethods() {
@@ -145,55 +123,3 @@ func (f ServiceFile) genServiceMethod(method parser.Method) {
 	)
 	f.Builder.NewLine()
 }
-
-//func (f ServiceFile) genServiceMethods(svcInterface *parser.Interface) {
-//	methodParameterNames := make([]parser.NamedTypeValue, 0)
-//	for _, v := range svcInterface.Methods {
-//		methodParameterNames = append(methodParameterNames, v.Parameters...)
-//		methodParameterNames = append(methodParameterNames, v.Results...)
-//	}
-//
-//	receiverVarName := f.GenerateNameBySample(f.Meta.SvcName, methodParameterNames)
-//	for _, m := range svcInterface.Methods {
-//		// if we can read service.go, check if serviceImpl already has method with service interface
-//		if f.ParsedFile != nil {
-//			exists := false
-//			for _, v := range f.ParsedFile.Methods {
-//				if v.StructName == m.StructName && v.Struct.Type == "*"+f.Meta.SvcName {
-//					fmt.Printf("%s: method `%s` already exists, skip\n", f.FileName, v.StructName)
-//					exists = true
-//					break
-//				}
-//			}
-//			if exists {
-//				continue
-//			}
-//		}
-//
-//		parameters := make([]jen.codeBuilder, 0)
-//		for _, p := range m.Parameters {
-//			parameters = append(parameters, jen.Id(p.StructName).Id(p.Type))
-//		}
-//
-//		results := make([]jen.codeBuilder, 0)
-//		returns := make([]jen.codeBuilder, 0)
-//		for _, result := range m.Results {
-//			results = append(results, jen.Id(result.StructName).Id(result.Type))
-//			returns = append(returns, jen.Id(result.StructName))
-//		}
-//
-//		body := []jen.codeBuilder{
-//			jen.Comment("TODO: implement business logic of " + m.StructName),
-//			jen.Return(returns...),
-//		}
-//		f.codeBuilder.AppendFunction(
-//			m.StructName,
-//			jen.Id(receiverVarName).Id("*"+f.Meta.SvcName),
-//			parameters,
-//			results,
-//			"",
-//			body...,
-//		)
-//		f.codeBuilder.NewLine()
-//	}
-//}

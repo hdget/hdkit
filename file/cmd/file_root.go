@@ -8,11 +8,12 @@ import (
 
 type CmdRootFile struct {
 	*generator.BaseGenerator
-	Meta    *generator.Meta
-	AppName string
-	SvcDir  string
-	GrpcDir string
-	PbDir   string
+	Meta      *generator.Meta
+	AppName   string
+	SvcDir    string
+	GrpcDir   string
+	PbDir     string
+	GlobalDir string
 }
 
 const (
@@ -34,6 +35,7 @@ func NewCmdRootFile(meta *generator.Meta) (generator.Generator, error) {
 		SvcDir:        meta.Dirs[g.Service],
 		GrpcDir:       meta.Dirs[g.Grpc],
 		PbDir:         meta.Dirs[g.Pb],
+		GlobalDir:     meta.Dirs[g.Global],
 	}, nil
 }
 
@@ -190,7 +192,7 @@ func (f CmdRootFile) genLoadConfigFunc() {
 				jen.Id("APP"), jen.Id(VarEnv), jen.Id(VarConfigFile),
 			),
 			jen.Line(),
-			jen.Id("err").Op(":=").Id("v").Dot("Unmarshal").Call(jen.Op("&").Qual("g", "Config")),
+			jen.Id("err").Op(":=").Id("v").Dot("Unmarshal").Call(jen.Op("&").Qual(f.GlobalDir, "Config")),
 			jen.If(jen.Id("err").Op("!=").Nil().Block(
 				jen.Qual(UtilsImportPath, "Fatal").Call(
 					jen.Lit("msg"), jen.Lit("unmarshal config"), jen.Lit("err"), jen.Err(),

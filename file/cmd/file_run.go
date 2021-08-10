@@ -8,11 +8,12 @@ import (
 
 type CmdRunServerFile struct {
 	*generator.BaseGenerator
-	Meta    *generator.Meta
-	AppName string
-	SvcDir  string
-	GrpcDir string
-	PbDir   string
+	Meta      *generator.Meta
+	AppName   string
+	SvcDir    string
+	GrpcDir   string
+	PbDir     string
+	GlobalDir string
 }
 
 const (
@@ -34,6 +35,7 @@ func NewCmdRunServerFile(meta *generator.Meta) (generator.Generator, error) {
 		SvcDir:        meta.Dirs[g.Service],
 		GrpcDir:       meta.Dirs[g.Grpc],
 		PbDir:         meta.Dirs[g.Pb],
+		GlobalDir:     meta.Dirs[g.Global],
 	}, nil
 }
 
@@ -79,7 +81,7 @@ func (f CmdRunServerFile) genVar() {
 					jen.Id("cmd").Op("*").Qual("github.com/spf13/cobra", "Command"),
 					jen.Id("args").Index().String(),
 				).Block(
-					jen.Err().Op(":=").Qual(SdkImportPath, "Initialize").Call(jen.Id("g").Dot("Config")),
+					jen.Err().Op(":=").Qual(SdkImportPath, "Initialize").Call(jen.Qual(f.GlobalDir, "Config")),
 					jen.If(jen.Err().Op("!=").Nil()).Block(
 						jen.Qual(UtilsImportPath, "Fatal").Call(jen.Lit("sdk initialize"), jen.Lit("err"), jen.Err()),
 					),
