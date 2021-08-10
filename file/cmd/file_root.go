@@ -10,9 +10,6 @@ type CmdRootFile struct {
 	*generator.BaseGenerator
 	Meta      *generator.Meta
 	AppName   string
-	SvcDir    string
-	GrpcDir   string
-	PbDir     string
 	GlobalDir string
 }
 
@@ -32,21 +29,23 @@ func NewCmdRootFile(meta *generator.Meta) (generator.Generator, error) {
 		BaseGenerator: baseGenerator,
 		Meta:          meta,
 		AppName:       meta.RootDir,
-		SvcDir:        meta.Dirs[g.Service],
-		GrpcDir:       meta.Dirs[g.Grpc],
-		PbDir:         meta.Dirs[g.Pb],
 		GlobalDir:     meta.Dirs[g.Global],
 	}, nil
 }
 
 func (f CmdRootFile) GetGenCodeFuncs() []func() {
 	return []func(){
+		f.genImports,
 		f.genConst,
 		f.genVar,
 		f.genInitFunc,
 		f.genExecuteFunc,
 		f.genLoadConfigFunc,
 	}
+}
+
+func (f *CmdRootFile) genImports() {
+	f.JenFile.ImportName(f.GlobalDir, "g")
 }
 
 // genMain generate main function
@@ -84,7 +83,7 @@ func (f CmdRootFile) genVar() {
 
 	found, _ = f.FindVar("rootCmd")
 	if found == nil {
-		f.Builder.Raw().Var().Id("rootCmd").Op("=").Id("&").Qual(CobraImportPath, "Command").Values(
+		f.Builder.Raw().Var().Id("rootCmd").Op("=").Id("&").Qual(g.ImportPaths[g.Cobra], "Command").Values(
 			jen.Dict{
 				jen.Id("Use"):   jen.Lit(f.AppName),
 				jen.Id("Short"): jen.Lit(f.AppName + " short description"),
@@ -105,7 +104,7 @@ func (f CmdRootFile) genInitFunc() {
 	found, _ := f.FindMethod("init")
 	if found == nil {
 		body := []jen.Code{
-			jen.Qual(CobraImportPath, "OnInitialize").Call(jen.Id("loadConfig")),
+			jen.Qual(g.ImportPaths[g.Cobra], "OnInitialize").Call(jen.Id("loadConfig")),
 			jen.Line(),
 			jen.Id("rootCmd").Dot("PersistentFlags").Call().Dot("StringVarP").Call(
 				jen.Op("&").Id(VarEnv), jen.Lit("env"), jen.Lit("e"), jen.Lit(""), jen.Lit("running environment, e,g: [prod, sim, pre, test, dev, local]"),
@@ -132,12 +131,12 @@ func (f CmdRootFile) genInitFunc() {
 //	// 尝试捕获panic并保存到错误中
 //	defer func() {
 //		if r := recover(); r != nil {
-//			sdk.RecordErrorStack(APP)
+//			hdsdk.RecordErrorStack(APP)
 //		}
 //	}()
 //
 //	if err := rootCmd.Execute(); err != nil {
-//		sdk.Shutdown()
+//		hdsdk.Shutdown()
 //		os.Exit(1)
 //	}
 //}
@@ -150,7 +149,7 @@ func (f CmdRootFile) genExecuteFunc() {
 					jen.Id("r").Op(":=").Id("recover").Call(),
 					jen.Id("r").Op("!=").Nil(),
 				).Block(
-					jen.Qual(UtilsImportPath, "RecordErrorStack").Call(jen.Lit(f.AppName)),
+					jen.Qual(g.ImportPaths[g.HdUtils], "RecordErrorStack").Call(jen.Lit(f.AppName)),
 				),
 			).Call(),
 			jen.If(
@@ -175,10 +174,10 @@ func (f CmdRootFile) genExecuteFunc() {
 
 //func loadConfig() {
 //	// 尝试从各种源加载配置信息
-//	v := sdk.LoadConfig(APP, env, configFile)
+//	v := hdsdk.LoadConfig(APP, env, configFile)
 //
 //	// 将配置信息转换成对应的数据结构
-//	err := v.Unmarshal(&store.Config)
+//	err := v.Unmarshal(&g.Config)
 //	if err != nil {
 //		utils.Fatal("msg", "unmarshal config", "err", err)
 //	}
@@ -188,13 +187,13 @@ func (f CmdRootFile) genLoadConfigFunc() {
 	found, _ := f.FindMethod("loadConfig")
 	if found == nil {
 		body := []jen.Code{
-			jen.Id("v").Op(":=").Qual(SdkImportPath, "LoadConfig").Call(
+			jen.Id("v").Op(":=").Qual(g.ImportPaths[g.HdSdk], "LoadConfig").Call(
 				jen.Id("APP"), jen.Id(VarEnv), jen.Id(VarConfigFile),
 			),
 			jen.Line(),
 			jen.Id("err").Op(":=").Id("v").Dot("Unmarshal").Call(jen.Op("&").Qual(f.GlobalDir, "Config")),
 			jen.If(jen.Id("err").Op("!=").Nil().Block(
-				jen.Qual(UtilsImportPath, "Fatal").Call(
+				jen.Qual(g.ImportPaths[g.HdUtils], "Fatal").Call(
 					jen.Lit("msg"), jen.Lit("unmarshal config"), jen.Lit("err"), jen.Err(),
 				),
 			)),

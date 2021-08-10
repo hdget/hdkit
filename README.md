@@ -1,5 +1,5 @@
 # hdkit 
-The idea to write this tool is help rapidly develop microservice with [hdget sdk](github.com/hdget/sdk). This tool will help automatically create a microservice based project boilerplate and generating template codes of microservice.
+The idea to write this tool is help rapidly develop microservice with [hdsdk](github.com/hdget/hdsdk). This tool will help automatically create a microservice based project boilerplate and generating template codes of microservice.
 
 ## Table of Contents
 - [Requirements](#requirements)
@@ -14,7 +14,7 @@ The idea to write this tool is help rapidly develop microservice with [hdget sdk
 
 Following library or utitiliy are required:
 
-- [hdget sdk](https://github.com/hdget/sdk)
+- [hdsdk](https://github.com/hdget/hdsdk)
 - [protoc](https://github.com/google/protobuf/releases) binary used compile protobuf files
 - [gogo protobuf](https://github.com/gogo/protobuf) 3rd libray to compile more fast grpc stub files
 
@@ -77,7 +77,7 @@ hdkit gen service <project>
     - `<project>/autogen/grpc`
       - `endpoint_<method>.go`
       
-          each method in `service` will have a corresponding endpoint, each endpoint implements `hdgetsdk` `GrpcEndpoint` interface
+          each method in `service` will have a corresponding endpoint, each endpoint implements `hdsdk` `GrpcEndpoint` interface
       
       - `handlers.go`: 
       

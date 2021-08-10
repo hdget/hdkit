@@ -36,12 +36,19 @@ func NewEndpointMethodFile(method parser.Method, meta *generator.Meta) (generato
 
 func (f *EndpointMethodFile) GetGenCodeFuncs() []func() {
 	return []func(){
+		f.genImports,
 		f.genEndpointStruct,
 		f.genGetNameFunc,
 		f.genMakeEndpointFunction,
 		f.genServerDecodeRequest,
 		f.genServerEncodeResponse,
 	}
+}
+
+func (f *EndpointMethodFile) genImports() {
+	f.JenFile.ImportName(f.PbDir, "pb")
+	f.JenFile.ImportName(g.ImportPaths[g.KitEndpoint], "endpoint")
+	f.JenFile.ImportName(g.ImportPaths[g.Errors], "errors")
 }
 
 func (f *EndpointMethodFile) genEndpointStruct() {
@@ -93,7 +100,7 @@ func (f *EndpointMethodFile) genMakeEndpointFunction() {
 			jen.Id("svc").Interface(),
 		},
 		[]jen.Code{
-			jen.Qual("github.com/go-kit/kit/endpoint", "Endpoint"),
+			jen.Qual(g.ImportPaths[g.KitEndpoint], "Endpoint"),
 		},
 		"",
 		jen.Return(cg.Raw()),

@@ -34,10 +34,15 @@ func NewServiceFile(meta *generator.Meta) (generator.Generator, error) {
 
 func (f *ServiceFile) GetGenCodeFuncs() []func() {
 	return []func(){
+		f.genImports,
 		f.genServiceStruct,
 		f.genNewServiceFunction,
 		f.genServiceMethods,
 	}
+}
+
+func (f *ServiceFile) genImports() {
+	f.JenFile.ImportName(f.PbDir, "pb")
 }
 
 func (f *ServiceFile) genServiceStruct() {

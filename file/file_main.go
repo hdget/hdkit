@@ -32,24 +32,26 @@ func NewMainFile(meta *generator.Meta) (generator.Generator, error) {
 
 func (f MainFile) GetGenCodeFuncs() []func() {
 	return []func(){
+		f.genImports,
 		f.genMain,
 	}
+}
+
+func (f *MainFile) genImports() {
+	f.JenFile.ImportName(f.CmdDir, "cmd")
 }
 
 //func main() {
 //	cmd.Execute()
 //}
 func (f MainFile) genMain() {
-	found, _ := f.FindMethod("main")
-	if found == nil {
-		f.Builder.AppendFunction(
-			"main",
-			nil,
-			nil,
-			nil,
-			"",
-			jen.Qual(f.CmdDir, "Execute").Call(),
-		)
-		f.Builder.NewLine()
-	}
+	f.Builder.AppendFunction(
+		"main",
+		nil,
+		nil,
+		nil,
+		"",
+		jen.Qual(f.CmdDir, "Execute").Call(),
+	)
+	f.Builder.NewLine()
 }

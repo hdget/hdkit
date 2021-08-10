@@ -15,7 +15,6 @@ type GConfigFile struct {
 
 const (
 	GConfigFilename = "config.go"
-	SdkImportPath   = "github.com/hdget/sdk"
 )
 
 func NewGConfigFile(meta *generator.Meta) (generator.Generator, error) {
@@ -39,14 +38,14 @@ func (f *GConfigFile) GetGenCodeFuncs() []func() {
 }
 
 //type XxxServiceConfig struct {
-//	sdk.Config `mapstructure:",squash"`
+//	hdsdk.Config `mapstructure:",squash"`
 //}
 func (f *GConfigFile) genConfigDefines() {
 	found, _ := f.FindStructure(f.ConfigStructName)
 	if found == nil {
 		f.Builder.AppendStruct(
 			f.ConfigStructName,
-			jen.Qual(SdkImportPath, "Config").Tag(map[string]string{"mapstructure": ",squash"}),
+			jen.Qual(g.ImportPaths[g.HdSdk], "Config").Tag(map[string]string{"mapstructure": ",squash"}),
 		)
 
 		// add `var Config *XxxServiceConfig

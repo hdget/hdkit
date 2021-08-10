@@ -41,9 +41,14 @@ func NewCmdRunServerFile(meta *generator.Meta) (generator.Generator, error) {
 
 func (f CmdRunServerFile) GetGenCodeFuncs() []func() {
 	return []func(){
+		f.genImports,
 		f.genVar,
 		f.genRunServerFunc,
 	}
+}
+
+func (f *CmdRunServerFile) genImports() {
+	f.JenFile.ImportName(f.GlobalDir, "g")
 }
 
 //var runCmd = &cobra.Command{
@@ -54,43 +59,43 @@ func (f CmdRunServerFile) GetGenCodeFuncs() []func() {
 //		runServer()
 //	},
 //	PreRun: func(cmd *cobra.Command, args []string) {
-//      err := sdk.Initialize(g.Config)
+//      err := hdsdk.Initialize(g.Config)
 //      if err != nil {
-//          utils.Fatal("sdk initialize", "err", err)
+//          utils.Fatal("hdsdk initialize", "err", err)
 //      }
 //	},
 //	PostRun: func(cmd *cobra.Command, args []string) {
-//		sdk.Shutdown()
+//		hdsdk.Shutdown()
 //	},
 //}
 func (f CmdRunServerFile) genVar() {
 	found, _ := f.FindVar(VarRunCmd)
 	if found == nil {
-		f.Builder.Raw().Var().Id("runCmd").Op("=").Id("&").Qual(CobraImportPath, "Command").Values(
+		f.Builder.Raw().Var().Id("runCmd").Op("=").Id("&").Qual(g.ImportPaths[g.Cobra], "Command").Values(
 			jen.Dict{
 				jen.Id("Use"):   jen.Lit("run"),
 				jen.Id("Short"): jen.Lit("run server short description"),
 				jen.Id("Long"):  jen.Lit("run server long description"),
 				jen.Id("Run"): jen.Func().Params(
-					jen.Id("cmd").Op("*").Qual("github.com/spf13/cobra", "Command"),
+					jen.Id("cmd").Op("*").Qual(g.ImportPaths[g.Cobra], "Command"),
 					jen.Id("args").Index().String(),
 				).Block(
 					jen.Id("runServer").Call(),
 				),
 				jen.Id("PreRun"): jen.Func().Params(
-					jen.Id("cmd").Op("*").Qual("github.com/spf13/cobra", "Command"),
+					jen.Id("cmd").Op("*").Qual(g.ImportPaths[g.Cobra], "Command"),
 					jen.Id("args").Index().String(),
 				).Block(
-					jen.Err().Op(":=").Qual(SdkImportPath, "Initialize").Call(jen.Qual(f.GlobalDir, "Config")),
+					jen.Err().Op(":=").Qual(g.ImportPaths[g.HdSdk], "Initialize").Call(jen.Qual(f.GlobalDir, "Config")),
 					jen.If(jen.Err().Op("!=").Nil()).Block(
-						jen.Qual(UtilsImportPath, "Fatal").Call(jen.Lit("sdk initialize"), jen.Lit("err"), jen.Err()),
+						jen.Qual(g.ImportPaths[g.HdUtils], "Fatal").Call(jen.Lit("sdk initialize"), jen.Lit("err"), jen.Err()),
 					),
 				),
 				jen.Id("PostRun"): jen.Func().Params(
-					jen.Id("cmd").Op("*").Qual("github.com/spf13/cobra", "Command"),
+					jen.Id("cmd").Op("*").Qual(g.ImportPaths[g.Cobra], "Command"),
 					jen.Id("args").Index().String(),
 				).Block(
-				// jen.Qual(SdkImportPath, "Shutdown").Call(),
+				// jen.Qual(HdSdkImportPath, "Shutdown").Call(),
 				),
 			},
 		).Line()
@@ -98,9 +103,17 @@ func (f CmdRunServerFile) genVar() {
 }
 
 //func runServer() {
-//	server := sdk.MicroService.My().CreateGrpcServer()
-//	svc := service.NewSearchService()
+//  ms := hdsdk.MicroService.My()
+//  if ms == nil {
+//    hdsdk.Logger.Fatal("get microservice instance", "err", "empty microservice instance")
+//  }
 //
+//  server := ms.CreateGrpcServer()
+//  if server == nil {
+//      hdsdk.Logger.Fatal("create grpc server", "err", "empty server")
+//  }
+//
+//	svc := service.NewSearchService()
 //	handlers := grpc.NewHandlers(server, svc)
 //	pb.RegisterSearchServiceServer(server.GetServer(), handlers)
 //
@@ -119,13 +132,21 @@ func (f CmdRunServerFile) genRunServerFunc() {
 	found, _ := f.FindMethod(MethodRunServer)
 	if found == nil {
 		body := []jen.Code{
-			jen.Id("server").Op(":=").Qual(SdkImportPath, "MicroService").Dot("My").Call().Dot("CreateGrpcServer").Call(),
-			jen.Id("svc").Op(":=").Qual(f.SvcDir, "New"+f.Meta.RawSvcName).Call(),
+			jen.Id("ms").Op(":=").Qual(g.ImportPaths[g.HdSdk], "MicroService").Dot("My").Call(),
+			jen.If(jen.Id("ms").Op("==").Nil()).Block(
+				jen.Qual(g.ImportPaths[g.HdSdk], "Logger").Dot("Fatal").Call(jen.Lit("get microservice instance"), jen.Lit("err"), jen.Lit("empty microservice instance")),
+			),
 			jen.Line(),
+			jen.Id("server").Op(":=").Qual("ms", "CreateGrpcServer").Call(),
+			jen.If(jen.Id("server").Op("==").Nil()).Block(
+				jen.Qual(g.ImportPaths[g.HdSdk], "Logger").Dot("Fatal").Call(jen.Lit("create grpc server"), jen.Lit("err"), jen.Lit("empty server")),
+			),
+			jen.Line(),
+			jen.Id("svc").Op(":=").Qual(f.SvcDir, "New"+f.Meta.RawSvcName).Call(),
 			jen.Id("handlers").Op(":=").Qual(f.GrpcDir, "NewHandlers").Call(jen.Id("server"), jen.Id("svc")),
 			jen.Qual(f.PbDir, "Register"+f.Meta.SvcServerInterfaceName).Call(jen.Id("server").Dot("GetServer").Call(), jen.Id("handlers")),
 			jen.Line(),
-			jen.Var().Id("group").Qual(ParallelImportPath, "Group"),
+			jen.Var().Id("group").Qual(g.ImportPaths[g.HdParallel], "Group"),
 			jen.Qual("group", "Add").Call(
 				jen.Func().Params().Id("error").Block(
 					jen.Return(jen.Id("server").Dot("Run").Call()),
@@ -134,7 +155,10 @@ func (f CmdRunServerFile) genRunServerFunc() {
 					jen.Id("server").Dot("Close").Call(),
 				),
 			),
-			jen.Id("group").Dot("Run").Call(),
+			jen.Err().Op(":=").Id("group").Dot("Run").Call(),
+			jen.If(jen.Err().Op("!=").Nil()).Block(
+				jen.Qual(g.ImportPaths[g.HdSdk], "Logger").Dot("Fatal").Call(jen.Lit("grpc server exited"), jen.Lit("err"), jen.Id("err")),
+			),
 		}
 
 		f.Builder.AppendFunction(MethodRunServer, nil, nil, nil, "", body...)

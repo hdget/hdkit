@@ -1,5 +1,5 @@
 # hdkit 
-写这个工具的初衷是为了方便使用[hdget sdk](github.com/hdget/sdk)来快速开发微服务应用，该工具可以快速的创建项目蓝图，并根据protobuf文件定义快速生成Go程序代码。
+写这个工具的初衷是为了方便使用[hdget sdk](github.com/hdget/hdsdk)来快速开发微服务应用，该工具可以快速的创建项目蓝图，并根据protobuf文件定义快速生成Go程序代码。
 
 ## 1. 创建微服务项目
 ```
@@ -38,7 +38,7 @@ hdkit gen service <project>
 - 首先其会在`<project>/autogen/pb`目录下查找编译了的`*.pb.go`文件，尝试从里面找到第一个`service`接口
 - 然后根据找到的`service`接口，生成如下内容：
 - `<project>/service`: 该目录时grpc接口的实现目录，工具自动生成了服务接口实现结构和对应的方法模板，后续需要在该目录下实现所有业务逻辑
-- `<project>/autogen/grpc`: 该目录下保存了所有实现`hdget/sdk`下的`microservice`接口的文件，包括：
+- `<project>/autogen/grpc`: 该目录下保存了所有实现`hdsdk`下的`microservice`接口的文件，包括：
 - `handlers.go`: 所有服务endpoint的集合struct,以及对应的New函数
 - `endpoint_method.go`: 所有服务方法的对应method的实现
 

@@ -42,24 +42,20 @@ func NewHandlersFile(meta *generator.Meta) (generator.Generator, error) {
 	}, nil
 }
 
-func (f *GrpcHandlersFile) PreGenerate() error {
-	err := f.BaseGenerator.PreGenerate()
-	if err != nil {
-		return err
-	}
-
-	// package a should be aliased to "b"
-	f.JenFile.ImportAlias("github.com/hdget/sdk/types", "sdktypes")
-	f.JenFile.ImportAlias("github.com/go-kit/kit/transport/grpc", "kitgrpc")
-	return nil
-}
-
 func (f *GrpcHandlersFile) GetGenCodeFuncs() []func() {
 	return []func(){
+		f.genImports,
 		f.genHandlersStructure,
 		f.genNewHandlersFunction,
 		f.genGrpcServeMethods,
 	}
+}
+
+func (f *GrpcHandlersFile) genImports() {
+	f.JenFile.ImportName(f.PbDir, "pb")
+	f.JenFile.ImportName(g.ImportPaths[g.Errors], "errors")
+	f.JenFile.ImportAlias("github.com/hdget/hdsdk/types", "sdktypes")
+	f.JenFile.ImportAlias("github.com/go-kit/kit/transport/grpc", "kitgrpc")
 }
 
 // genHandlersStructure collects all of the handlers that compose a service.
@@ -107,7 +103,7 @@ func (f *GrpcHandlersFile) genNewHandlersFunction() {
 		Func().
 		Id("NewHandlers").
 		Params(
-			jen.Id("server").Qual("github.com/hdget/sdk/types", "MsGrpcServer"),
+			jen.Id("server").Qual(g.ImportPaths[g.HdSdkTypes], "MsGrpcServer"),
 			jen.Id("svc").Qual(f.PbDir, f.Meta.SvcServerInterface.Name),
 		).
 		Op("*").Id("Handlers").
