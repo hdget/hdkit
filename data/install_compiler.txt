@@ -1,0 +1,9 @@
+Please download proto3 protoc binary from below:
+===========================================
+https://github.com/google/protobuf/releases
+===========================================
+
+- Choose appropriate binary for your platform
+- Add `protoc` binary to your path, e,g: <GOROOT>/bin
+- Run `protoc --version` to check if it works
+- Run `<project>/install_compiler.bat`

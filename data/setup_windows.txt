@@ -1,0 +1,8 @@
+# NOTE:
+- If protobuf file already exist in `<project>/proto` directory, run:
+
+hdkit gen pb <project>
+
+- If protobuf file not exist in `<project>/proto` directory, Run
+
+hdkit gen pb <project> <proto filepath>
