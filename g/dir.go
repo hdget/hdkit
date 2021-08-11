@@ -31,8 +31,6 @@ var (
 		Grpc:    []string{"autogen", "grpc"},
 		Http:    []string{"autogen", "http"},
 		Cmd:     []string{"cmd"},
-		Server:  []string{"pkg", "server"},
-		Client:  []string{"pkg", "client"},
 	}
 
 	gDirs map[DirType]string
@@ -55,8 +53,6 @@ func GetProjectDirs(rootDir string) map[DirType]string {
 			Grpc:    buildDir(rootDir, dirTokens[Grpc]),
 			Http:    buildDir(rootDir, dirTokens[Http]),
 			Cmd:     buildDir(rootDir, dirTokens[Cmd]),
-			Server:  buildDir(rootDir, dirTokens[Server]),
-			Client:  buildDir(rootDir, dirTokens[Client]),
 		}
 	}
 	return gDirs

@@ -137,22 +137,22 @@ func (f CmdRunServerFile) genRunServerFunc() {
 				jen.Qual(g.ImportPaths[g.HdSdk], "Logger").Dot("Fatal").Call(jen.Lit("get microservice instance"), jen.Lit("err"), jen.Lit("empty microservice instance")),
 			),
 			jen.Line(),
-			jen.Id("server").Op(":=").Qual("ms", "CreateGrpcServer").Call(),
-			jen.If(jen.Id("server").Op("==").Nil()).Block(
-				jen.Qual(g.ImportPaths[g.HdSdk], "Logger").Dot("Fatal").Call(jen.Lit("create grpc server"), jen.Lit("err"), jen.Lit("empty server")),
+			jen.Id("manager").Op(":=").Qual("ms", "NewGrpcServerManager").Call(),
+			jen.If(jen.Id("manager").Op("==").Nil()).Block(
+				jen.Qual(g.ImportPaths[g.HdSdk], "Logger").Dot("Fatal").Call(jen.Lit("new grpc server manager"), jen.Lit("err"), jen.Lit("create failed")),
 			),
 			jen.Line(),
 			jen.Id("svc").Op(":=").Qual(f.SvcDir, "New"+f.Meta.RawSvcName).Call(),
-			jen.Id("handlers").Op(":=").Qual(f.GrpcDir, "NewHandlers").Call(jen.Id("server"), jen.Id("svc")),
-			jen.Qual(f.PbDir, "Register"+f.Meta.SvcServerInterfaceName).Call(jen.Id("server").Dot("GetServer").Call(), jen.Id("handlers")),
+			jen.Id("handlers").Op(":=").Qual(f.GrpcDir, "NewHandlers").Call(jen.Id("manager"), jen.Id("svc")),
+			jen.Qual(f.PbDir, "Register"+f.Meta.SvcServerInterfaceName).Call(jen.Id("manager").Dot("GetServer").Call(), jen.Id("handlers")),
 			jen.Line(),
 			jen.Var().Id("group").Qual(g.ImportPaths[g.HdParallel], "Group"),
 			jen.Qual("group", "Add").Call(
 				jen.Func().Params().Id("error").Block(
-					jen.Return(jen.Id("server").Dot("Run").Call()),
+					jen.Return(jen.Id("manager").Dot("RunServer").Call()),
 				),
 				jen.Func().Params(jen.Id("err error")).Block(
-					jen.Id("server").Dot("Close").Call(),
+					jen.Id("manager").Dot("Close").Call(),
 				),
 			),
 			jen.Err().Op(":=").Id("group").Dot("Run").Call(),

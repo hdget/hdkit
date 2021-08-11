@@ -113,6 +113,7 @@ func (f CmdRootFile) genInitFunc() {
 				jen.Op("&").Id(VarConfigFile), jen.Lit("config"), jen.Lit("c"), jen.Lit(""), jen.Lit("config file, default: config.toml"),
 			),
 			jen.Id("rootCmd").Dot("AddCommand").Call(jen.Id("runCmd")),
+			jen.Id("rootCmd").Dot("AddCommand").Call(jen.Id("clientCmd")),
 		}
 
 		f.Builder.AppendFunction(

@@ -71,8 +71,10 @@ func (sf *ServiceFactory) getNewFileFuncs() []NewFileFunc {
 	return []NewFileFunc{
 		service.NewServiceFile,  // service/service.go
 		grpc.NewHandlersFile,    // autogen/grpc/handlers.go
+		grpc.NewClientFile,      // autogen/grpc/client.go
 		cmd.NewCmdRootFile,      // cmd/root.go
 		cmd.NewCmdRunServerFile, // cmd/run.go
+		cmd.NewCmdRunClientFile, // cmd/client.go
 		g.NewGConfigFile,        // g/config.go
 		NewMainFile,             // main.go
 	}

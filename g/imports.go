@@ -12,6 +12,7 @@ const (
 	KitGrpc
 	Cobra
 	Errors
+	StdGrpc
 )
 
 var (
@@ -24,5 +25,6 @@ var (
 		KitGrpc:     "github.com/go-kit/kit/transport/grpc",
 		Cobra:       "github.com/spf13/cobra",
 		Errors:      "github.com/pkg/errors",
+		StdGrpc:     "google.golang.org/grpc",
 	}
 )

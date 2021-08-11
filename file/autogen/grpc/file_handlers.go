@@ -54,8 +54,8 @@ func (f *GrpcHandlersFile) GetGenCodeFuncs() []func() {
 func (f *GrpcHandlersFile) genImports() {
 	f.JenFile.ImportName(f.PbDir, "pb")
 	f.JenFile.ImportName(g.ImportPaths[g.Errors], "errors")
-	f.JenFile.ImportAlias("github.com/hdget/hdsdk/types", "sdktypes")
-	f.JenFile.ImportAlias("github.com/go-kit/kit/transport/grpc", "kitgrpc")
+	f.JenFile.ImportName(g.ImportPaths[g.HdSdkTypes], "types")
+	f.JenFile.ImportAlias(g.ImportPaths[g.KitGrpc], "kitgrpc")
 }
 
 // genHandlersStructure collects all of the handlers that compose a service.
@@ -92,9 +92,9 @@ func (f *GrpcHandlersFile) genNewHandlersFunction() {
 	handlers := jen.Dict{}
 	for _, m := range f.Meta.SvcServerInterface.Methods {
 		handlerName := m.Name + HandlerStructSuffix
-		endpointName := m.Name + EndpointSuffix
-		handlers[jen.Id(handlerName)] = jen.Qual("server", "CreateHandler").Call(
-			jen.Id("svc"), jen.Id("&"+endpointName+"{}"))
+		aspectName := m.Name + AspectSuffix
+		handlers[jen.Id(handlerName)] = jen.Qual("manager", "CreateHandler").Call(
+			jen.Id("svc"), jen.Id("&" + aspectName + "{}"))
 	}
 
 	body := jen.Return(jen.Op("&").Id("Handlers").Values(handlers))
@@ -103,7 +103,7 @@ func (f *GrpcHandlersFile) genNewHandlersFunction() {
 		Func().
 		Id("NewHandlers").
 		Params(
-			jen.Id("server").Qual(g.ImportPaths[g.HdSdkTypes], "MsGrpcServer"),
+			jen.Id("manager").Qual(g.ImportPaths[g.HdSdkTypes], "GrpcServerManager"),
 			jen.Id("svc").Qual(f.PbDir, f.Meta.SvcServerInterface.Name),
 		).
 		Op("*").Id("Handlers").
