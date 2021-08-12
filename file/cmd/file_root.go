@@ -46,6 +46,9 @@ func (f CmdRootFile) GetGenCodeFuncs() []func() {
 
 func (f *CmdRootFile) genImports() {
 	f.JenFile.ImportName(f.GlobalDir, "g")
+	f.JenFile.ImportName(g.ImportPaths[g.HdSdk], "hdsdk")
+	f.JenFile.ImportName(g.ImportPaths[g.HdUtils], "utils")
+	f.JenFile.ImportName(g.ImportPaths[g.Cobra], "cobra")
 }
 
 // genMain generate main function

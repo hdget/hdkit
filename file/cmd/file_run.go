@@ -18,7 +18,7 @@ type CmdRunServerFile struct {
 
 const (
 	CmdRunServerFilename = "run.go"
-	VarRunCmd            = "runCmd"
+	VarRunServerCmd      = "runCmd"
 	MethodRunServer      = "runServer"
 )
 
@@ -49,6 +49,16 @@ func (f CmdRunServerFile) GetGenCodeFuncs() []func() {
 
 func (f *CmdRunServerFile) genImports() {
 	f.JenFile.ImportName(f.GlobalDir, "g")
+	f.JenFile.ImportName(f.PbDir, "pb")
+	f.JenFile.ImportName(f.SvcDir, "service")
+	f.JenFile.ImportAlias(f.GrpcDir, "gengrpc")
+	f.JenFile.ImportName(g.ImportPaths[g.Errors], "errors")
+	f.JenFile.ImportName(g.ImportPaths[g.StdGrpc], "grpc")
+	f.JenFile.ImportName(g.ImportPaths[g.HdSdk], "hdsdk")
+	f.JenFile.ImportName(g.ImportPaths[g.HdUtils], "utils")
+	f.JenFile.ImportName(g.ImportPaths[g.KitEndpoint], "endpoint")
+	f.JenFile.ImportName(g.ImportPaths[g.Cobra], "cobra")
+	f.JenFile.ImportName(g.ImportPaths[g.HdParallel], "parallel")
 }
 
 //var runCmd = &cobra.Command{
@@ -69,7 +79,7 @@ func (f *CmdRunServerFile) genImports() {
 //	},
 //}
 func (f CmdRunServerFile) genVar() {
-	found, _ := f.FindVar(VarRunCmd)
+	found, _ := f.FindVar(VarRunServerCmd)
 	if found == nil {
 		f.Builder.Raw().Var().Id("runCmd").Op("=").Id("&").Qual(g.ImportPaths[g.Cobra], "Command").Values(
 			jen.Dict{

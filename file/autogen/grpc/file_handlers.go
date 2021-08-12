@@ -94,7 +94,7 @@ func (f *GrpcHandlersFile) genNewHandlersFunction() {
 		handlerName := m.Name + HandlerStructSuffix
 		aspectName := m.Name + AspectSuffix
 		handlers[jen.Id(handlerName)] = jen.Qual("manager", "CreateHandler").Call(
-			jen.Id("svc"), jen.Id("&" + aspectName + "{}"))
+			jen.Id("svc"), jen.Id("&"+aspectName+"{}"))
 	}
 
 	body := jen.Return(jen.Op("&").Id("Handlers").Values(handlers))

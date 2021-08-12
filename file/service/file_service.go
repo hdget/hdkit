@@ -124,7 +124,7 @@ func (f ServiceFile) genServiceMethod(method parser.Method) {
 			jen.List(utils.GetValidParameterCode("", f.PbDir, method.Results[0].Type), jen.Id("error")),
 		},
 		"",
-		jen.Return(jen.Nil(), jen.Nil()),
+		jen.Return(jen.Op("&").Qual(f.PbDir, f.Deference(method.Results[0].Type)).Block(), jen.Nil()),
 	)
 	f.Builder.NewLine()
 }

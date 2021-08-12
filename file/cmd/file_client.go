@@ -18,7 +18,7 @@ type CmdRunClientFile struct {
 
 const (
 	CmdRunClientFilename = "client.go"
-	VarClientCmd         = "clientCmd"
+	VarRunClientCmd      = "clientCmd"
 	MethodRunClient      = "runClient"
 )
 
@@ -49,6 +49,12 @@ func (f CmdRunClientFile) GetGenCodeFuncs() []func() {
 func (f *CmdRunClientFile) genImports() {
 	f.JenFile.ImportName(f.GlobalDir, "g")
 	f.JenFile.ImportAlias(f.GrpcDir, "gengrpc")
+	f.JenFile.ImportName(g.ImportPaths[g.Errors], "errors")
+	f.JenFile.ImportName(g.ImportPaths[g.StdGrpc], "grpc")
+	f.JenFile.ImportName(g.ImportPaths[g.HdSdk], "hdsdk")
+	f.JenFile.ImportName(g.ImportPaths[g.HdUtils], "utils")
+	f.JenFile.ImportName(g.ImportPaths[g.KitEndpoint], "endpoint")
+	f.JenFile.ImportName(g.ImportPaths[g.Cobra], "cobra")
 }
 
 //var runCmd = &cobra.Command{
@@ -69,9 +75,9 @@ func (f *CmdRunClientFile) genImports() {
 //	},
 //}
 func (f CmdRunClientFile) genVar() {
-	found, _ := f.FindVar(VarRunCmd)
+	found, _ := f.FindVar(VarRunClientCmd)
 	if found == nil {
-		f.Builder.Raw().Var().Id(VarClientCmd).Op("=").Id("&").Qual(g.ImportPaths[g.Cobra], "Command").Values(
+		f.Builder.Raw().Var().Id(VarRunClientCmd).Op("=").Id("&").Qual(g.ImportPaths[g.Cobra], "Command").Values(
 			jen.Dict{
 				jen.Id("Use"):   jen.Lit("client"),
 				jen.Id("Short"): jen.Lit("run client short description"),
@@ -133,8 +139,30 @@ func (f CmdRunClientFile) genVar() {
 //  }
 //  hdsdk.Logger.Debug(result)
 func (f CmdRunClientFile) genRunClientFunc() {
-	found, _ := f.FindMethod(MethodRunServer)
+	found, _ := f.FindMethod(MethodRunClient)
 	if found == nil {
+		var exampleMethodName, exampleMethodParam string
+		if len(f.Meta.SvcServerInterface.Methods) > 0 {
+			m := f.Meta.SvcServerInterface.Methods[0]
+			exampleMethodName = m.Name
+			exampleMethodParam = f.Deference(m.Parameters[1].Type)
+		}
+
+		callClientCodes := []jen.Code{}
+		if exampleMethodName != "" && exampleMethodParam != "" {
+			callClientCodes = []jen.Code{
+				jen.List(jen.Id("response"), jen.Err()).Op(":=").Id("client").Dot(exampleMethodName).Call(
+					jen.Qual("context", "Background").Call(),
+					jen.Op("&").Qual(f.PbDir, exampleMethodParam).Block(),
+				),
+				jen.If(jen.Err().Op("!=").Nil()).Block(
+					jen.Return(jen.Err()),
+				),
+				jen.Qual("fmt", "Println").Call(jen.Id("response")),
+				jen.Return(jen.Nil()),
+			}
+		}
+
 		body := []jen.Code{
 			jen.Id("ms").Op(":=").Qual(g.ImportPaths[g.HdSdk], "MicroService").Dot("My").Call(),
 			jen.If(jen.Id("ms").Op("==").Nil()).Block(
@@ -156,23 +184,15 @@ func (f CmdRunClientFile) genRunClientFunc() {
 			),
 			jen.Defer().Id("conn").Dot("Close").Call(),
 			jen.Line(),
-			jen.List(jen.Id("client"), jen.Err()).Op(":=").Qual("gengrpc", "NewClient").Call(
+			jen.List(jen.Id("client"), jen.Err()).Op(":=").Qual(f.GrpcDir, "NewClient").Call(
 				jen.Id("conn"),
 			),
 			jen.If(jen.Err().Op("!=").Nil()).Block(
 				jen.Return(jen.Err()),
 			),
 			jen.Line(),
-			jen.List(jen.Id("response"), jen.Err()).Op(":=").Id("client").Dot("WhoIs").Call(
-				jen.Qual("context", "Background").Call(),
-				jen.Nil(),
-			),
-			jen.If(jen.Err().Op("!=").Nil()).Block(
-				jen.Return(jen.Err()),
-			),
-			jen.Qual("fmt", "Println").Call(jen.Id("response")),
-			jen.Return(jen.Nil()),
 		}
+		body = append(body, callClientCodes...)
 
 		f.Builder.AppendFunction(MethodRunClient, nil, nil, []jen.Code{jen.Error()}, "", body...)
 	}

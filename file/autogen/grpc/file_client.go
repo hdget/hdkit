@@ -14,8 +14,8 @@ type GrpcClientFile struct {
 }
 
 const (
-	ClientFileName    = "client.go"
-	ClientStructName  = "Client"
+	ClientFileName   = "client.go"
+	ClientStructName = "Client"
 )
 
 var (
@@ -51,6 +51,7 @@ func (f *GrpcClientFile) genImports() {
 	f.JenFile.ImportName(g.ImportPaths[g.Errors], "errors")
 	f.JenFile.ImportName(g.ImportPaths[g.StdGrpc], "grpc")
 	f.JenFile.ImportName(g.ImportPaths[g.HdSdk], "hdsdk")
+	f.JenFile.ImportName(g.ImportPaths[g.HdSdkTypes], "types")
 	f.JenFile.ImportName(g.ImportPaths[g.KitEndpoint], "endpoint")
 }
 
@@ -127,7 +128,7 @@ func (f *GrpcClientFile) genNewClientFunc() {
 	for _, m := range f.Meta.SvcServerInterface.Methods {
 		aspectStructName := m.Name + AspectSuffix
 		clients[jen.Id(m.Name)] = jen.Qual("manager", "CreateEndpoint").Call(
-			jen.Id("conn"), jen.Id("&" + aspectStructName + "{}"))
+			jen.Id("conn"), jen.Id("&"+aspectStructName+"{}"))
 	}
 
 	body = append(body,
@@ -149,6 +150,6 @@ func (f *GrpcClientFile) genNewClientFunc() {
 			jen.Error(),
 		},
 		"",
-		body...
+		body...,
 	)
 }

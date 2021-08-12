@@ -23,13 +23,15 @@ type BaseGenerator struct {
 	Filename  string // Filename for output file
 	overwrite bool   // if the file need to be overwrite or appended
 
-	JenFile           *jen.File     // original go file
-	ParsedFile        *parser.File  // go file -> parsed file
-	sourceFileContent *bytes.Buffer // source file content
+	JenFile     *jen.File     // original go file
+	ParsedFile  *parser.File  // go file -> parsed file
+	fileContent *bytes.Buffer // source file content
 
 	Builder *CodeBuilder
 
 	GenFuncs []func() // sub generate functions
+
+	isNewCreated bool // flag to indicate the file is new create or not
 }
 
 // NewBaseGenerator parse file if file doesn't exist, read FileContent from the file
@@ -56,10 +58,13 @@ func NewBaseGenerator(dir, filename string, overwrite bool, args ...string) (*Ba
 		return nil, err
 	}
 
+	// if no file exists, it will create automatically
+	isNewCreated := false
 	if !exists {
 		if err := g.GetFs().WriteFile(filepath, []byte(jenFile.GoString()), false); err != nil {
 			return nil, err
 		}
+		isNewCreated = true
 	}
 
 	fileData, err := g.GetFs().ReadFile(filepath)
@@ -68,25 +73,25 @@ func NewBaseGenerator(dir, filename string, overwrite bool, args ...string) (*Ba
 	}
 
 	var buffer = &bytes.Buffer{}
-	_, err = buffer.Write(fileData)
-	if err != nil {
+	if _, err = buffer.Write(fileData); err != nil {
 		return nil, err
 	}
 
-	parsedFile, err := parser.NewFileParser().Parse(fileData)
+	parsedFile, err := parser.NewFileParser().Parse(buffer.Bytes())
 	if err != nil {
 		return nil, err
 	}
 
 	return &BaseGenerator{
-		pkg:               pkg,
-		Dir:               dir,
-		Filename:          filename,
-		overwrite:         overwrite,
-		JenFile:           jenFile,
-		ParsedFile:        parsedFile,
-		sourceFileContent: buffer,
-		Builder:           NewCodeBuilder(jenFile.Empty()),
+		pkg:          pkg,
+		Dir:          dir,
+		Filename:     filename,
+		overwrite:    overwrite,
+		JenFile:      jenFile,
+		ParsedFile:   parsedFile,
+		fileContent:  buffer,
+		Builder:      NewCodeBuilder(jenFile.Empty()),
+		isNewCreated: isNewCreated,
 	}, nil
 }
 
@@ -395,13 +400,11 @@ func (bg *BaseGenerator) Deference(v string) string {
 
 // Save forced will overwrite the file
 func (bg *BaseGenerator) save() error {
-	var data string
-
-	data = bg.JenFile.GoString()
-	if !bg.overwrite && bg.sourceFileContent.Len() > 0 {
-		bg.sourceFileContent.WriteString("\n")
-		bg.sourceFileContent.WriteString(bg.Builder.String())
-		data = bg.sourceFileContent.String()
+	data := bg.JenFile.GoString()
+	if !bg.overwrite && !bg.isNewCreated && bg.fileContent.Len() > 0 {
+		bg.fileContent.WriteString("\n")
+		bg.fileContent.WriteString(bg.Builder.String())
+		data = bg.fileContent.String()
 	}
 
 	toWrite, err := utils.GoImportsSource(bg.Dir, data)

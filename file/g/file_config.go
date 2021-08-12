@@ -33,8 +33,13 @@ func NewGConfigFile(meta *generator.Meta) (generator.Generator, error) {
 
 func (f *GConfigFile) GetGenCodeFuncs() []func() {
 	return []func(){
+		f.genImports,
 		f.genConfigDefines,
 	}
+}
+
+func (f *GConfigFile) genImports() {
+	f.JenFile.ImportName(g.ImportPaths[g.HdSdk], "hdsdk")
 }
 
 //type XxxServiceConfig struct {

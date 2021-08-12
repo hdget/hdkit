@@ -63,7 +63,6 @@ func (f *AspectMethodFile) genAspectStruct() {
 	f.Builder.Raw().Type().Id(f.StructName).Struct().Line()
 }
 
-
 //func (ap SearchAspect) GetMethodName() string  {
 //	return "Hello"
 //}
@@ -89,7 +88,7 @@ func (f *AspectMethodFile) genGetServiceNameFunc() {
 		nil,
 		nil,
 		"string",
-		jen.Return(jen.Lit("pb." + f.Meta.RawSvcName)),
+		jen.Return(jen.Lit("pb."+f.Meta.RawSvcName)),
 	)
 	f.Builder.NewLine()
 }
