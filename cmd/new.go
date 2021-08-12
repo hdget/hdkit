@@ -71,7 +71,7 @@ func newProject(rootDir string) error {
 	}
 
 	if cliPbPath != "" {
-		return processProtoFile(rootDir, cliPbPath)
+		return processProtoFiles(rootDir, cliPbPath)
 	}
 	return nil
 }

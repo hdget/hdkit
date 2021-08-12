@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/cobra"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
 	"runtime"
 )
@@ -36,14 +37,14 @@ var genPbCmd = &cobra.Command{
 			}
 
 			for _, fp := range matches {
-				err := processProtoFile(rootDir, fp)
+				err := processProtoFiles(rootDir, fp)
 				if err != nil {
 					fmt.Printf("Error process proto file:%s, err:%v", fp, err)
 					os.Exit(1)
 				}
 			}
 		} else {
-			err := processProtoFile(rootDir, cliPbPath)
+			err := processProtoFiles(rootDir, cliPbPath)
 			if err != nil {
 				fmt.Println("Error generate pb files:", err)
 				os.Exit(1)
@@ -52,22 +53,34 @@ var genPbCmd = &cobra.Command{
 	},
 }
 
-func processProtoFile(rootDir, protoFilePath string) error {
+func processProtoFiles(rootDir, protoFilePath string) error {
 	exists, err := g.GetFs().Exists(protoFilePath)
 	if err != nil {
 		return err
 	}
 	if !exists {
-		return fmt.Errorf("protobuf file: %s not found", protoFilePath)
+		return fmt.Errorf("protobuf filepath: %s not found", protoFilePath)
 	}
 
 	// copy proto file to `proto` directory
 	protoDir := g.GetDir(rootDir, g.Proto)
-	filename := filepath.Base(protoFilePath)
-	destProtoPath := filepath.Join(protoDir, filename)
-	if filepath.Dir(protoFilePath) != protoDir {
-		err = g.GetFs().Copy(protoFilePath, destProtoPath)
+	isDir, _ := g.GetFs().IsDir(protoFilePath)
+	if isDir {
+		matched, err := filepath.Glob(path.Join(protoFilePath, "*.proto"))
 		if err != nil {
+			return fmt.Errorf("search *.proto under path: %s", protoFilePath)
+		}
+		if len(matched) == 0 {
+			return fmt.Errorf("no *.proto files under path: %s", protoFilePath)
+		}
+
+		for _, m := range matched {
+			if err := copyFile(m, protoDir); err != nil {
+				return err
+			}
+		}
+	} else {
+		if err := copyFile(protoFilePath, protoDir); err != nil {
 			return err
 		}
 	}
@@ -78,9 +91,21 @@ func processProtoFile(rootDir, protoFilePath string) error {
 	}
 
 	// if we found protoc, try to comple .proto files
-	err = compileProto(g.GetDir(rootDir, g.Binary), destProtoPath)
+	err = compileProto(g.GetDir(rootDir, g.Binary), g.GetDir(rootDir, g.Pb))
 	if err != nil {
 		return err
+	}
+	return nil
+}
+
+func copyFile(srcPath, destDir string) error {
+	filename := filepath.Base(srcPath)
+	destPath := path.Join(destDir, filename)
+	if filepath.Dir(destPath) != srcPath {
+		err := g.GetFs().Copy(srcPath, destPath)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -96,10 +121,10 @@ func checkProtoc() bool {
 }
 
 // create go.mod file
-func compileProto(binDir, protoPath string) error {
-	exist, _ := g.GetFs().Exists(protoPath)
+func compileProto(binDir, pbPath string) error {
+	exist, _ := g.GetFs().Exists(pbPath)
 	if !exist {
-		return fmt.Errorf("proto file: %s doesn't exist", protoPath)
+		return fmt.Errorf("proto file: %s doesn't exist", pbPath)
 	}
 
 	var cmds []string
@@ -120,7 +145,7 @@ func compileProto(binDir, protoPath string) error {
 	cmd.Stderr = &stderr
 	stdout, err := cmd.Output()
 	if err != nil {
-		return fmt.Errorf("compile proto file: %s, err:%v", protoPath, err)
+		return fmt.Errorf("compile proto file: %s, err:%v", pbPath, err)
 	}
 	fmt.Println(string(stdout))
 	return nil

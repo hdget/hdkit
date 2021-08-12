@@ -57,6 +57,10 @@ func (kf *KitFs) ReadFile(path string) ([]byte, error) {
 	return afero.ReadFile(kf.Fs, path)
 }
 
+func (kf *KitFs) IsDir(path string) (bool, error) {
+	return afero.IsDir(kf.Fs, path)
+}
+
 // ReadFile reads the file from `path` and returns the content in string format
 // or returns an error if it occurs.
 //func (f *KitFs) ReadFile(path string) ([]byte, error) {

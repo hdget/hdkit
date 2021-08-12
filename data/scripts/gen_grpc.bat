@@ -26,10 +26,11 @@ for /r %ROOT_DIR% %%i in (*.proto) do (
         @REM please use ! in for loop and enabledelayedexpansion
         set PROTO_DIR=!absdir:%%j=!
         if exist !PROTO_DIR! (
-            echo proto directory: !PROTO_DIR!
-            echo output directory: !OUTPUT_DIR!
+            @REM echo proto directory: !PROTO_DIR!
+            @REM echo output directory: !OUTPUT_DIR!
+            echo compiling: %%i
             protoc -I !PROTO_DIR! --gogofaster_out=plugins=grpc:!OUTPUT_DIR! %%i
-            goto quit
+            @REM goto quit
         )
     )
 )
