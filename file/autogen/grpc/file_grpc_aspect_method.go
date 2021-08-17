@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-type AspectMethodFile struct {
+type GrpcAspectMethodFile struct {
 	*generator.BaseGenerator
 	Meta       *generator.Meta
 	Method     parser.Method // service interface's method name
@@ -22,14 +22,14 @@ const (
 	AspectSuffix = "Aspect"
 )
 
-func NewEndpointMethodFile(method parser.Method, meta *generator.Meta) (generator.Generator, error) {
-	filename := fmt.Sprintf("%s_%s.go", strings.ToLower(AspectSuffix), strings.ToLower(method.Name))
+func NewGrpcAspectMethodFile(method parser.Method, meta *generator.Meta) (generator.Generator, error) {
+	filename := fmt.Sprintf("grpc_%s_%s.go", strings.ToLower(AspectSuffix), strings.ToLower(method.Name))
 	baseGenerator, err := generator.NewBaseGenerator(meta.Dirs[g.Grpc], filename, true)
 	if err != nil {
 		return nil, err
 	}
 
-	return &AspectMethodFile{
+	return &GrpcAspectMethodFile{
 		BaseGenerator: baseGenerator,
 		Meta:          meta,
 		Method:        method,
@@ -38,7 +38,7 @@ func NewEndpointMethodFile(method parser.Method, meta *generator.Meta) (generato
 	}, nil
 }
 
-func (f *AspectMethodFile) GetGenCodeFuncs() []func() {
+func (f *GrpcAspectMethodFile) GetGenCodeFuncs() []func() {
 	return []func(){
 		f.genImports,
 		f.genAspectStruct,
@@ -53,20 +53,20 @@ func (f *AspectMethodFile) GetGenCodeFuncs() []func() {
 	}
 }
 
-func (f *AspectMethodFile) genImports() {
+func (f *GrpcAspectMethodFile) genImports() {
 	f.JenFile.ImportName(f.PbDir, "pb")
 	f.JenFile.ImportName(g.ImportPaths[g.KitEndpoint], "endpoint")
 	f.JenFile.ImportName(g.ImportPaths[g.Errors], "errors")
 }
 
-func (f *AspectMethodFile) genAspectStruct() {
+func (f *GrpcAspectMethodFile) genAspectStruct() {
 	f.Builder.Raw().Type().Id(f.StructName).Struct().Line()
 }
 
 //func (ap SearchAspect) GetMethodName() string  {
 //	return "Hello"
 //}
-func (f *AspectMethodFile) genGetMethodNameFunc() {
+func (f *GrpcAspectMethodFile) genGetMethodNameFunc() {
 	f.Builder.AppendFunction(
 		"GetMethodName",
 		jen.Id("ap").Op("*").Id(f.StructName),
@@ -81,7 +81,7 @@ func (f *AspectMethodFile) genGetMethodNameFunc() {
 //func (ap HelloAspect) GetServiceName() string  {
 //	return "Hello"
 //}
-func (f *AspectMethodFile) genGetServiceNameFunc() {
+func (f *GrpcAspectMethodFile) genGetServiceNameFunc() {
 	f.Builder.AppendFunction(
 		"GetServiceName",
 		jen.Id("ap").Op("*").Id(f.StructName),
@@ -96,7 +96,7 @@ func (f *AspectMethodFile) genGetServiceNameFunc() {
 //func (ap HelloAspect) GetServiceName() string  {
 //	return "Hello"
 //}
-func (f *AspectMethodFile) genGetGrpcReplyTypeFunc() {
+func (f *GrpcAspectMethodFile) genGetGrpcReplyTypeFunc() {
 	f.Builder.AppendFunction(
 		"GetGrpcReplyType",
 		jen.Id("ap").Op("*").Id(f.StructName),
@@ -125,7 +125,7 @@ func (f *AspectMethodFile) genGetGrpcReplyTypeFunc() {
 //      return s.Search(ctx, req)
 //	}
 //}
-func (f *AspectMethodFile) genMakeEndpointFunc() {
+func (f *GrpcAspectMethodFile) genMakeEndpointFunc() {
 	cg := generator.NewCodeBuilder(nil)
 	body := f.TypeAssert("s", "svc", f.PbDir, f.Meta.SvcServerInterfaceName, "make endpoint: type assert error")
 	body = append(body, f.TypeAssert("req", "request", f.PbDir, f.Method.Parameters[1].Type, "make endpoint: type assert error")...)
@@ -167,7 +167,7 @@ func (f *AspectMethodFile) genMakeEndpointFunc() {
 //func (ep *SearchAspect) ServerDecodeRequest(ctx context.Context, request interface{}) (interface{}, error) {
 //	return request.(*pb.SearchRequest), nil
 //}
-func (f *AspectMethodFile) genServerDecodeRequestFunc() {
+func (f *GrpcAspectMethodFile) genServerDecodeRequestFunc() {
 	body := f.TypeAssert("req", "request", f.PbDir, f.Method.Parameters[1].Type, "server decode request: type assert error")
 	body = append(body, jen.Return(jen.Id("req"), jen.Nil()))
 
@@ -192,7 +192,7 @@ func (f *AspectMethodFile) genServerDecodeRequestFunc() {
 //func (s *SearchAspect) ServerEncodeResponse(ctx context.Context, response interface{}) (interface{}, error) {
 //	return response.(*pb.SearchResponse), nil
 //}
-func (f *AspectMethodFile) genServerEncodeResponseFunc() {
+func (f *GrpcAspectMethodFile) genServerEncodeResponseFunc() {
 	body := f.TypeAssert("resp", "response", f.PbDir, f.Method.Results[0].Type, "server encode response: type assert error")
 	body = append(body, jen.Return(jen.Id("resp"), jen.Nil()))
 
@@ -217,7 +217,7 @@ func (f *AspectMethodFile) genServerEncodeResponseFunc() {
 //func (ap HelloAspect) ClientEncodeRequest(ctx context.Context, request interface{}) (interface{}, error) {
 //	return request.(*pb.HelloRequest), nil
 //}
-func (f *AspectMethodFile) genClientEncodeRequestFunc() {
+func (f *GrpcAspectMethodFile) genClientEncodeRequestFunc() {
 	body := f.TypeAssert("req", "request", f.PbDir, f.Method.Parameters[1].Type, "client encode request: type assert error")
 	body = append(body, jen.Return(jen.Id("req"), jen.Nil()))
 
@@ -242,7 +242,7 @@ func (f *AspectMethodFile) genClientEncodeRequestFunc() {
 //func (ap HelloAspect) ClientEncodeRequest(ctx context.Context, request interface{}) (interface{}, error) {
 //	return request.(*pb.HelloRequest), nil
 //}
-func (f *AspectMethodFile) genClientDecodeResponseFunc() {
+func (f *GrpcAspectMethodFile) genClientDecodeResponseFunc() {
 	body := f.TypeAssert("resp", "response", f.PbDir, f.Method.Results[0].Type, "client decode response: type assert error")
 	body = append(body, jen.Return(jen.Id("resp"), jen.Nil()))
 

@@ -2,6 +2,7 @@ package file
 
 import (
 	"github.com/hdget/hdkit/file/autogen/grpc"
+	"github.com/hdget/hdkit/file/autogen/http"
 	"github.com/hdget/hdkit/file/cmd"
 	"github.com/hdget/hdkit/file/g"
 	"github.com/hdget/hdkit/file/service"
@@ -51,7 +52,21 @@ func (sf *ServiceFactory) Create() error {
 	// generate method based files
 	// e,g: endpoint_<method>.go
 	for _, method := range sf.Meta.SvcServerInterface.Methods {
-		g, err := grpc.NewEndpointMethodFile(method, sf.Meta)
+		g, err := grpc.NewGrpcAspectMethodFile(method, sf.Meta)
+		if err != nil {
+			return err
+		}
+
+		if g != nil {
+			err := g.Generate(g)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	for _, method := range sf.Meta.SvcServerInterface.Methods {
+		g, err := http.NewHttpAspectMethodFile(method, sf.Meta)
 		if err != nil {
 			return err
 		}
@@ -69,13 +84,16 @@ func (sf *ServiceFactory) Create() error {
 
 func (sf *ServiceFactory) getNewFileFuncs() []NewFileFunc {
 	return []NewFileFunc{
-		service.NewServiceFile,  // service/service.go
-		grpc.NewHandlersFile,    // autogen/grpc/handlers.go
-		grpc.NewClientFile,      // autogen/grpc/client.go
-		g.NewGConfigFile,        // g/config.go
-		cmd.NewCmdRootFile,      // cmd/root.go
-		cmd.NewCmdRunServerFile, // cmd/run.go
-		cmd.NewCmdRunClientFile, // cmd/client.go
-		NewMainFile,             // main.go
+		service.NewServiceFile,      // service/service.go
+		grpc.NewGrpcHandlersFile,    // autogen/grpc/handlers.go
+		grpc.NewClientFile,          // autogen/grpc/client.go
+		http.NewHttpHandlersFile,    // autogen/http/handlers.go
+		g.NewGConfigFile,            // g/config.go
+		cmd.NewCmdRootFile,          // cmd/root.go
+		cmd.NewCmdRunFile,           // cmd/run.go
+		cmd.NewCmdRunGrpcServerFile, // cmd/run_grpc.go
+		cmd.NewCmdRunHttpServerFile, // cmd/run_http.go
+		cmd.NewCmdRunClientFile,     // cmd/client.go
+		NewMainFile,                 // main.go
 	}
 }

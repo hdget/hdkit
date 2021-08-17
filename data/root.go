@@ -3,12 +3,14 @@ package data
 import "embed"
 
 var (
-	//go:embed scripts/*
-	Scripts embed.FS
-	//go:embed install_compiler.txt
+	//go:embed script/*
+	ScriptFs embed.FS
+	//go:embed proto/*
+	ProtoFs embed.FS
+	//go:embed message/install_compiler.txt
 	MsgInstallProtoc string
-	//go:embed setup_windows.txt
+	//go:embed message/setup_windows.txt
 	MsgWinSetup string
-	//go:embed setup_linux.txt
+	//go:embed message/setup_linux.txt
 	MsgLinuxSetup string
 )

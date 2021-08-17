@@ -99,6 +99,7 @@ func processProtoFiles(rootDir, protoFilePath string) error {
 }
 
 func copyFile(srcPath, destDir string) error {
+	// copy proto files
 	filename := filepath.Base(srcPath)
 	destPath := path.Join(destDir, filename)
 	if filepath.Dir(destPath) != srcPath {

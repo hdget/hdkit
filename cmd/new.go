@@ -65,6 +65,11 @@ func newProject(rootDir string) error {
 		return err
 	}
 
+	err = copy3rdProtoFiles(rootDir, g.GetDir(rootDir, g.Proto))
+	if err != nil {
+		return err
+	}
+
 	err = createGoModuleFile(rootDir)
 	if err != nil {
 		return err
@@ -78,7 +83,7 @@ func newProject(rootDir string) error {
 
 // create script files under `bin` dir
 func createScriptFile(binaryDir string) error {
-	files, err := iofs.ReadDir(data.Scripts, "scripts")
+	files, err := iofs.ReadDir(data.ScriptFs, "script")
 	if err != nil {
 		return err
 	}
@@ -90,11 +95,53 @@ func createScriptFile(binaryDir string) error {
 
 	for _, f := range files {
 		if strings.HasSuffix(f.Name(), fileSuffix) {
-			data, _ := data.Scripts.ReadFile(path.Join("scripts", f.Name()))
-			err := g.GetFs().WriteFile(path.Join(binaryDir, f.Name()), data, true)
+			bs, _ := data.ScriptFs.ReadFile(path.Join("script", f.Name()))
+			err := g.GetFs().WriteFile(path.Join(binaryDir, f.Name()), bs, true)
 			if err != nil {
 				return err
 			}
+		}
+	}
+
+	return nil
+}
+
+// create 3rd party proto files under `proto` dir
+func copy3rdProtoFiles(rootDir, protoDir string) error {
+	subdirs := make([]string, 0)
+	protofiles := make([]string, 0)
+	err := iofs.WalkDir(data.ProtoFs, "proto", func(path string, d iofs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if d.IsDir() {
+			subdirs = append(subdirs, path)
+		} else {
+			if strings.HasSuffix(d.Name(), ".proto") {
+				protofiles = append(protofiles, path)
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+
+	// 创建对应子目录
+	for _, subdir := range subdirs {
+		newDir := path.Join(rootDir, subdir)
+		if err := g.GetFs().MakeDir(newDir); err != nil {
+			return err
+		}
+	}
+
+	// 拷贝proto文件
+	for _, f := range protofiles {
+		destPath := path.Join(rootDir, f)
+		bs, _ := data.ProtoFs.ReadFile(f)
+		if err := g.GetFs().WriteFile(destPath, bs, true); err != nil {
+			return err
 		}
 	}
 

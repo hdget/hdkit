@@ -17,8 +17,6 @@ const (
 	Grpc
 	Http
 	Cmd
-	Server
-	Client
 )
 
 var (

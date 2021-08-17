@@ -17,8 +17,8 @@ type CmdRunClientFile struct {
 }
 
 const (
-	CmdRunClientFilename = "client.go"
-	VarRunClientCmd      = "clientCmd"
+	CmdRunClientFilename = "run_client.go"
+	VarRunClientCmd      = "runClientCmd"
 	MethodRunClient      = "runClient"
 )
 

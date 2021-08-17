@@ -10,9 +10,12 @@ const (
 	HdParallel
 	KitEndpoint
 	KitGrpc
+	KitHttp
 	Cobra
 	Errors
 	StdGrpc
+	StdHttp
+	StdJson
 )
 
 var (
@@ -23,8 +26,11 @@ var (
 		HdParallel:  "github.com/hdget/hdsdk/utils/parallel",
 		KitEndpoint: "github.com/go-kit/kit/endpoint",
 		KitGrpc:     "github.com/go-kit/kit/transport/grpc",
+		KitHttp:     "github.com/go-kit/kit/transport/http",
 		Cobra:       "github.com/spf13/cobra",
 		Errors:      "github.com/pkg/errors",
 		StdGrpc:     "google.golang.org/grpc",
+		StdHttp:     "net/http",
+		StdJson:     "encoding/json",
 	}
 )

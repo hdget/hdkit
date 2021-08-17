@@ -16,10 +16,9 @@ type GrpcHandlersFile struct {
 }
 
 const (
-	HandlersFileName    = "handlers.go"
-	HandlersStructName  = "Handlers"
+	HandlersFileName    = "grpc_handlers.go"
+	HandlersStructName  = "GrpcHandlers"
 	HandlerStructSuffix = "Handler"
-	EndpointSuffix      = "Endpoint"
 )
 
 var (
@@ -28,7 +27,7 @@ var (
 	}
 )
 
-func NewHandlersFile(meta *generator.Meta) (generator.Generator, error) {
+func NewGrpcHandlersFile(meta *generator.Meta) (generator.Generator, error) {
 	baseGenerator, err := generator.NewBaseGenerator(meta.Dirs[g.Grpc], HandlersFileName, true)
 	if err != nil {
 		return nil, err
@@ -82,7 +81,7 @@ func (f *GrpcHandlersFile) genHandlersStructure() {
 
 // genNewHandlersFunction returns new handlers function
 //
-// func NewHandlers(sever MsGrpcServer, svc Service) *Handlers {
+// func NewHandlers(manager GrpcServerManager, svc Service) *Handlers {
 //    return &Handlers{
 //   			SearchHandler: sever.CreateHandler(svc, NewServerHandler()),
 //				HelloHandler: sever.CreateHandler(svc, NewHelloHandler()),
@@ -97,7 +96,7 @@ func (f *GrpcHandlersFile) genNewHandlersFunction() {
 			jen.Id("svc"), jen.Id("&"+aspectName+"{}"))
 	}
 
-	body := jen.Return(jen.Op("&").Id("Handlers").Values(handlers))
+	body := jen.Return(jen.Op("&").Id(HandlersStructName).Values(handlers))
 
 	f.Builder.Raw().
 		Func().
@@ -106,7 +105,7 @@ func (f *GrpcHandlersFile) genNewHandlersFunction() {
 			jen.Id("manager").Qual(g.ImportPaths[g.HdSdkTypes], "GrpcServerManager"),
 			jen.Id("svc").Qual(f.PbDir, f.Meta.SvcServerInterface.Name),
 		).
-		Op("*").Id("Handlers").
+		Op("*").Id(HandlersStructName).
 		Block(body)
 	f.Builder.NewLine()
 }
@@ -140,7 +139,7 @@ func (f *GrpcHandlersFile) genGrpcServeMethod(method parser.Method) {
 
 	f.Builder.AppendFunction(
 		method.Name,
-		jen.Id("h").Op("*").Id("Handlers"),
+		jen.Id("h").Op("*").Id(HandlersStructName),
 		[]jen.Code{
 			jen.Id("ctx").Qual("context", "Context"),
 			utils.GetValidParameterCode("request", f.PbDir, method.Parameters[1].Type),
