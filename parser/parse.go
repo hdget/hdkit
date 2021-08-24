@@ -96,11 +96,12 @@ func (fp *FileParser) parseType(ds []ast.Spec, f *File) {
 			f.Structures = append(f.Structures, str)
 		case *ast.FuncType:
 			st := tsp.Type.(*ast.FuncType)
-			f.FuncType = FuncType{
+			fnType := FuncType{
 				Name:       tsp.Name.Name,
 				Parameters: fp.parseFieldListAsNamedTypes(st.Params),
 				Results:    fp.parseFieldListAsNamedTypes(st.Results),
 			}
+			f.FuncTypes = append(f.FuncTypes, fnType)
 		default:
 			// do nothing
 			// fmt.Println("Skipping unknown type")

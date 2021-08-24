@@ -5,10 +5,17 @@ import (
 	"os"
 )
 
+type GenerateFactory interface {
+
+}
+
+var (
+	cliFramework int
+)
+
 var generateCmd = &cobra.Command{
 	Use:     "gen",
-	Short:   "generate service/middleware/client",
-	Aliases: []string{"g"},
+	Short:   "generate service codes",
 	Run: func(cmd *cobra.Command, args []string) {
 		if err := cmd.Help(); err != nil {
 			os.Exit(1)
@@ -18,6 +25,8 @@ var generateCmd = &cobra.Command{
 
 func init() {
 	generateCmd.AddCommand(genPbCmd)
-	generateCmd.AddCommand(genClientCmd)
-	generateCmd.AddCommand(genServiceCmd)
+	generateCmd.AddCommand(genDaprCodesCmd)
+	generateCmd.AddCommand(genGokitCodesCmd)
+
+	generateCmd.PersistentFlags().IntVarP(&cliFramework, "framework", "t", int(FRAMEWORK_DAPR), "Specify framework type")
 }

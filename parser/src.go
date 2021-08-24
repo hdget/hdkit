@@ -5,7 +5,7 @@ type File struct {
 	Comment string
 	Package string
 	// Only used to get the middleware type
-	FuncType   FuncType
+	FuncTypes  []FuncType
 	Imports    []NamedTypeValue
 	Constants  []NamedTypeValue
 	Vars       []NamedTypeValue

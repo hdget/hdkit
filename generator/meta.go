@@ -13,14 +13,11 @@ type Meta struct {
 	SvcServerInterfaceName string            // service interface name
 	SvcServerInterface     *parser.Interface // service server interface found in .pb.go files
 	RootDir                string
-	Dirs                   map[g.DirType]string // all project dirs
 	ImportPaths            map[g.ImportType]string
 }
 
 func NewMeta(rootDir string) (*Meta, error) {
-	dirs := g.GetProjectDirs(rootDir)
-
-	svcInterface, err := parser.ParsePbFiles(dirs[g.Pb])
+	svcInterface, err := parser.ParsePbFiles(g.GetDir(rootDir, g.Pb))
 	if err != nil {
 		return nil, err
 	}
@@ -48,6 +45,5 @@ func NewMeta(rootDir string) (*Meta, error) {
 		SvcStructName:          svcStructName,
 		SvcServerInterface:     svcInterface,
 		RootDir:                rootDir,
-		Dirs:                   dirs,
 	}, nil
 }

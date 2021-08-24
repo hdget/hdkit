@@ -3,13 +3,21 @@ package cmd
 import (
 	_ "embed"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"os"
 	"strings"
 )
 
+type framework int
+const(
+	_ framework = iota
+	FRAMEWORK_DAPR
+	FRAMEWORK_GOKIT
+)
+
 // pb path specified in cli mode
-var cliPbPath string
+var (
+	cliProtoPath string
+)
 
 // RootCmd is the root command of kit
 var RootCmd = &cobra.Command{
@@ -34,15 +42,7 @@ func init() {
 	RootCmd.AddCommand(newCmd)
 	RootCmd.AddCommand(generateCmd)
 
-	RootCmd.PersistentFlags().StringVarP(&cliPbPath, "pb_path", "p", "", "Specify protobuf filepath")
-
-	RootCmd.PersistentFlags().BoolP("debug", "d", false, "If you want to see the debug logs.")
-	RootCmd.PersistentFlags().BoolP("force", "f", false, "Force overide existing files without asking.")
-	RootCmd.PersistentFlags().StringP("folder", "b", "", "If you want to specify the base folder of the project.")
-
-	viper.BindPFlag("folder", RootCmd.PersistentFlags().Lookup("folder"))
-	viper.BindPFlag("force", RootCmd.PersistentFlags().Lookup("force"))
-	viper.BindPFlag("debug", RootCmd.PersistentFlags().Lookup("debug"))
+	RootCmd.PersistentFlags().StringVarP(&cliProtoPath, "proto_path", "p", "", "Specify protobuf filepath")
 }
 
 func getRootDir(name string) string {

@@ -125,13 +125,13 @@ func TestFileParser_ParseMiddlewareFuncType(t *testing.T) {
 					},
 				},
 			}
-			So(len(f.FuncType.Parameters), ShouldEqual, len(expect.Parameters))
-			So(len(f.FuncType.Results), ShouldEqual, len(expect.Results))
+			So(len(f.FuncTypes[0].Parameters), ShouldEqual, len(expect.Parameters))
+			So(len(f.FuncTypes[0].Results), ShouldEqual, len(expect.Results))
 			Convey("Test if middleware name and parameters/results are the same", func() {
-				So(f.FuncType.Name, ShouldEqual, expect.Name)
-				So(f.FuncType.Parameters[0].Name, ShouldEqual, expect.Parameters[0].Name)
-				So(f.FuncType.Parameters[0].Type, ShouldEqual, expect.Parameters[0].Type)
-				So(f.FuncType.Results[0].Type, ShouldEqual, expect.Results[0].Type)
+				So(f.FuncTypes[0].Name, ShouldEqual, expect.Name)
+				So(f.FuncTypes[0].Parameters[0].Name, ShouldEqual, expect.Parameters[0].Name)
+				So(f.FuncTypes[0].Parameters[0].Type, ShouldEqual, expect.Parameters[0].Type)
+				So(f.FuncTypes[0].Results[0].Type, ShouldEqual, expect.Results[0].Type)
 			})
 		})
 	})

@@ -149,6 +149,21 @@ func (bg *BaseGenerator) FindInterface(interfaceName string) (*parser.Interface,
 	return found, nil
 }
 
+func (bg *BaseGenerator) FindFuncType(funcType string) (*parser.FuncType, error) {
+	var found *parser.FuncType
+	for i, v := range bg.ParsedFile.FuncTypes {
+		if v.Name == funcType {
+			found = &bg.ParsedFile.FuncTypes[i]
+			break
+		}
+	}
+
+	if found == nil {
+		return nil, errors.Wrap(g.ErrFuncTypeNotFound, funcType)
+	}
+	return found, nil
+}
+
 func (bg *BaseGenerator) FindVar(varName string) (*parser.NamedTypeValue, error) {
 	var found *parser.NamedTypeValue
 	for i, v := range bg.ParsedFile.Vars {

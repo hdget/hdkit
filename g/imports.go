@@ -11,6 +11,9 @@ const (
 	KitEndpoint
 	KitGrpc
 	KitHttp
+	DaprGrpc
+	DaprHttp
+	DaprCommon
 	Cobra
 	Errors
 	StdGrpc
@@ -32,5 +35,8 @@ var (
 		StdGrpc:     "google.golang.org/grpc",
 		StdHttp:     "net/http",
 		StdJson:     "encoding/json",
+		DaprGrpc:    "github.com/dapr/go-sdk/service/grpc",
+		DaprHttp:    "github.com/dapr/go-sdk/service/http",
+		DaprCommon:  "github.com/dapr/go-sdk/service/common",
 	}
 )
