@@ -1,5 +1,8 @@
 # hdkit 
-The idea to write this tool is help rapidly develop microservice with [hdsdk](github.com/hdget/hdsdk). This tool will help automatically create a microservice based project boilerplate and generating template codes of microservice.
+The tool is help rapidly develop microservice with [hdsdk](github.com/hdget/hdsdk). This tool will help automatically create a microservice based project boilerplate and generating template codes of microservice.
+Now it supports two kinds codes for different framework:
+- [dapr](https://github.com/dapr/dapr)
+- [gokit](https://github.com/go-kit/kit)
 
 ## Table of Contents
 - [Requirements](#requirements)
@@ -30,9 +33,13 @@ Or if you already create a project as described in `Usage` part, you can execute
 
 ## Usage
 
-### 1. create microserivce project
+### 1. create microservice project
 ```
-hdkit new <project_name> -p <protobuf_filepath>
+hdkit new <framework> <project_name> -p <protobuf_filepath>
+
+e,g:
+hdkit new dapr example -p example.proto
+hdkit new gokit example -p example.proto
 ```
 - Above command will do following:
  - create project boilerplate
@@ -62,7 +69,11 @@ hdkit gen pb <project_name> -p <protobuf_filepath>
 
 ### 3. generate microservice code templates
 ```
-hdkit gen service <project>
+hdkit gen <framework> <project>
+
+e,g:
+hdkit gen dapr example
+hdkit gen gokit example
 ```
 - Firstly, it will try to parse `*.pb.go` files under `<project>/autogen/pb` directory one by one until it find a protobuf `service`
 - Based on found `service`, it will generate following:
@@ -74,7 +85,7 @@ hdkit gen service <project>
   
      The `service` implementation, please put all business logic here, all files under this directory will not be overwriten
 
-    - `<project>/autogen/grpc`
+  - if it is gokit based project, it will generate: `<project>/autogen/grpc`
       - `endpoint_<method>.go`
       
           each method in `service` will have a corresponding endpoint, each endpoint implements `hdsdk` `GrpcEndpoint` interface
