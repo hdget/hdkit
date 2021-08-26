@@ -1,0 +1,44 @@
+[sdk]
+    [sdk.log]
+        # 当前支持日志级别: "trace", "debug", "info", "warn", "error", "fatal", "panic"
+        level = "debug"
+        # 日志文件名称
+        filename = "app.log"
+        # 日志结转配置
+        [sdk.log.rotate]
+            # 日志最大保存时间7天(单位hour)
+            max_age = 168
+            # 日志切割时间间隔24小时（单位hour)
+            rotation_time=24
+#    [sdk.mysql]
+#        [sdk.mysql.default]
+#            database = "mysql"
+#            user = "root"
+#            password = "password"
+#            host = "127.0.0.1"
+#            port = 3306
+#    [sdk.redis]
+#        [sdk.redis.default]
+#            host = "127.0.0.1"
+#            port = 6379
+#            password = ""
+#            db = 0
+#    [sdk.rabbitmq]
+#        [sdk.rabbitmq.default]
+#            host="127.0.0.1"
+#            username="user"
+#            password="password"
+#            port=5672
+#            vhost="/"
+#        [[sdk.rabbitmq.default.consumers]]
+#            name = "consumer1"
+#            exchange_name="exchange_name"
+#            exchange_type="direct"
+#            queue_name = "queue_name"
+#            routing_keys = [""]
+#        [[sdk.rabbitmq.default.producers]]
+#            name = "producer1"
+#            exchange_name="exchange_name"
+#            exchange_type="direct"
+
+

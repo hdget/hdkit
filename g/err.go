@@ -10,7 +10,7 @@ var (
 	ErrInvalidGeneratorParameters = errors.New("invalid base generator parameters")
 	ErrInterfaceNotFound          = errors.New("interface not found")
 	ErrMethodNotFound             = errors.New("method not found")
-	ErrFuncTypeNotFound          = errors.New("funcType not found")
+	ErrFuncTypeNotFound           = errors.New("funcType not found")
 	ErrVarNotFound                = errors.New("var not found")
 	ErrConstNotFound              = errors.New("const not found")
 	ErrStructureNotFound          = errors.New("structure not found")

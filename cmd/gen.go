@@ -6,7 +6,6 @@ import (
 )
 
 type GenerateFactory interface {
-
 }
 
 var (
@@ -14,8 +13,8 @@ var (
 )
 
 var generateCmd = &cobra.Command{
-	Use:     "gen",
-	Short:   "generate service codes",
+	Use:   "gen",
+	Short: "generate service codes",
 	Run: func(cmd *cobra.Command, args []string) {
 		if err := cmd.Help(); err != nil {
 			os.Exit(1)

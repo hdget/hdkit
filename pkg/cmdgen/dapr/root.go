@@ -5,14 +5,13 @@ import (
 	"github.com/hdget/hdkit/pkg/cmdgen"
 	"github.com/hdget/hdkit/pkg/cmdgen/dapr/cmd"
 	"github.com/hdget/hdkit/pkg/cmdgen/dapr/g"
-	"github.com/hdget/hdkit/pkg/cmdgen/dapr/service"
+	"github.com/hdget/hdkit/pkg/cmdgen/dapr/pkg/service"
 )
 
 type daprFileFactory struct {
 	rootDir string
-	meta *generator.Meta
+	meta    *generator.Meta
 }
-
 
 // NewDaprFileFactory returns a initialized and ready generator.
 func NewDaprFileFactory(rootDir string) (cmdgen.FileFactory, error) {
@@ -23,7 +22,7 @@ func NewDaprFileFactory(rootDir string) (cmdgen.FileFactory, error) {
 
 	return &daprFileFactory{
 		rootDir: rootDir,
-		meta: meta,
+		meta:    meta,
 	}, nil
 }
 
@@ -55,7 +54,6 @@ func (factory *daprFileFactory) getNewFileFuncs() []cmdgen.NewFileFunc {
 		cmd.NewCmdRunFile,           // cmd/run.go
 		cmd.NewCmdRunGrpcServerFile, // cmd/run_grpc.go
 		cmd.NewCmdRunHttpServerFile, // cmd/run_http.go
-		NewMainFile,            // main.go
+		NewMainFile,                 // main.go
 	}
 }
-

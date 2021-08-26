@@ -7,4 +7,3 @@ type FileFactory interface {
 }
 
 type NewFileFunc = func(*generator.Meta) (generator.Generator, error)
-

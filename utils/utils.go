@@ -2,9 +2,11 @@ package utils
 
 import (
 	"bytes"
+	"embed"
 	"github.com/dave/jennifer/jen"
 	"github.com/hdget/hdkit/g"
 	"golang.org/x/tools/imports"
+	iofs "io/fs"
 	"os"
 	"path"
 	"regexp"
@@ -251,4 +253,28 @@ func GetValidParameterCode(paramName, impPath, paramType string) jen.Code {
 	}
 
 	return ret
+}
+
+// TraverseDirFiles return relative dirs
+func TraverseDirFiles(fs embed.FS, subdir string) ([]string, []string, error) {
+	dirs := make([]string, 0)
+	files := make([]string, 0)
+
+	err := iofs.WalkDir(fs, subdir, func(path string, d iofs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if d.IsDir() {
+			dirs = append(dirs, path)
+		} else {
+			files = append(files, path)
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return dirs, files, nil
 }

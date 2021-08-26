@@ -145,7 +145,7 @@ func (f CmdRunGrpcServerFile) genRunServerFunc() {
 				jen.Qual(g.ImportPaths[g.HdSdk], "Logger").Dot("Fatal").Call(jen.Lit("new dapr service"), jen.Lit("error"), jen.Id("err")),
 			),
 			jen.Line(),
-			jen.Id("svc").Op(":=").Qual(f.SvcDir, "New" + f.Meta.RawSvcName).Call(),
+			jen.Id("svc").Op(":=").Qual(f.SvcDir, "New"+f.Meta.RawSvcName).Call(),
 			jen.Line(),
 			jen.For(
 				jen.List(jen.Id("method"), jen.Id("handler")).Op(":=").Range().Qual("svc", "GetInvocationHandlers").Call(),
@@ -173,7 +173,7 @@ func (f CmdRunGrpcServerFile) genRunServerFunc() {
 				jen.List(jen.Id("_"), jen.Id("event")).Op(":=").Range().Qual("svc", "GetEvents").Call(),
 			).Block(
 				jen.If(
-					jen.Err().Op(":=").Qual("server", "AddTopicEventHandler").Call(jen.Qual("event", "Sub"), jen.Qual("event","Handler")),
+					jen.Err().Op(":=").Qual("server", "AddTopicEventHandler").Call(jen.Qual("event", "Sub"), jen.Qual("event", "Handler")),
 					jen.Err().Op("!=").Nil(),
 				).Block(
 					jen.Qual(g.ImportPaths[g.HdSdk], "Logger").Dot("Fatal").Call(jen.Lit("adding event handler"), jen.Lit("error"), jen.Id("err")),

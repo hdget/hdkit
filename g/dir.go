@@ -17,6 +17,7 @@ const (
 	Grpc
 	Http
 	Cmd
+	Setting
 )
 
 var (
@@ -24,11 +25,12 @@ var (
 		Binary:  []string{"bin"},
 		Proto:   []string{"proto"},
 		Global:  []string{"g"}, // global directory which stores config, error
-		Service: []string{"service"},
+		Service: []string{"pkg", "service"},
 		Pb:      []string{"autogen", "pb"},
 		Grpc:    []string{"autogen", "grpc"},
 		Http:    []string{"autogen", "http"},
 		Cmd:     []string{"cmd"},
+		Setting: []string{"setting"},
 	}
 )
 
@@ -36,23 +38,6 @@ var (
 func GetDir(rootDir string, dirType DirType) string {
 	return buildDir(rootDir, dirTokens[dirType])
 }
-//
-//// GetProjectDirs get default project dir
-//func GetProjectDirs(rootDir string) map[DirType]string {
-//	if len(gDirs) == 0 {
-//		gDirs = map[DirType]string{
-//			Binary:  buildDir(rootDir, dirTokens[Binary]),
-//			Proto:   buildDir(rootDir, dirTokens[Proto]),
-//			Global:  buildDir(rootDir, dirTokens[Global]),
-//			Service: buildDir(rootDir, dirTokens[Service]),
-//			Pb:      buildDir(rootDir, dirTokens[Pb]),
-//			Grpc:    buildDir(rootDir, dirTokens[Grpc]),
-//			Http:    buildDir(rootDir, dirTokens[Http]),
-//			Cmd:     buildDir(rootDir, dirTokens[Cmd]),
-//		}
-//	}
-//	return gDirs
-//}
 
 // assembly the relative Dir for generating files
 func buildDir(rootDir string, dirTokens []string, args ...string) string {

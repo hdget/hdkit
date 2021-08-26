@@ -25,6 +25,5 @@ func NewInvocationHandlersFile(meta *generator.Meta) (generator.Generator, error
 }
 
 func (f *InvocationHandlersFile) GetGenCodeFuncs() []func() {
-	return []func(){
-	}
+	return []func(){}
 }

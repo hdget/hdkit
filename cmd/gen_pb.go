@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/hdget/hdkit/g"
-	"github.com/hdget/hdkit/pkg"
+	"github.com/hdget/hdkit/pkg/common"
 	"github.com/spf13/cobra"
 	"os"
 	"path/filepath"
@@ -40,7 +40,7 @@ var genPbCmd = &cobra.Command{
 		}
 
 		for _, filePath := range protoFilePaths {
-			err := pkg.ProcessProtoFiles(rootDir, filePath)
+			err := common.ProcessProtoFiles(rootDir, filePath)
 			if err != nil {
 				fmt.Printf("Error process proto file:%s, err:%v", filePath, err)
 				os.Exit(1)

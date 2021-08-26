@@ -7,14 +7,13 @@ import (
 	"github.com/hdget/hdkit/pkg/cmdgen/gokit/autogen/http"
 	"github.com/hdget/hdkit/pkg/cmdgen/gokit/cmd"
 	"github.com/hdget/hdkit/pkg/cmdgen/gokit/g"
-	"github.com/hdget/hdkit/pkg/cmdgen/gokit/service"
+	service2 "github.com/hdget/hdkit/pkg/cmdgen/gokit/pkg/service"
 )
 
 type gokitFileFactory struct {
 	rootDir string
-	meta *generator.Meta
+	meta    *generator.Meta
 }
-
 
 // NewGokitCodeFactory returns a initialized and ready generator.
 func NewGokitFileFactory(rootDir string) (cmdgen.FileFactory, error) {
@@ -25,7 +24,7 @@ func NewGokitFileFactory(rootDir string) (cmdgen.FileFactory, error) {
 
 	return &gokitFileFactory{
 		rootDir: rootDir,
-		meta: meta,
+		meta:    meta,
 	}, nil
 }
 
@@ -81,7 +80,7 @@ func (factory *gokitFileFactory) Create() error {
 
 func (factory *gokitFileFactory) getNewFileFuncs() []cmdgen.NewFileFunc {
 	return []cmdgen.NewFileFunc{
-		service.NewServiceFile,      // service/service.go
+		service2.NewServiceFile,     // service/service.go
 		grpc.NewGrpcHandlersFile,    // autogen/grpc/handlers.go
 		grpc.NewClientFile,          // autogen/grpc/client.go
 		http.NewHttpHandlersFile,    // autogen/http/handlers.go
@@ -91,7 +90,6 @@ func (factory *gokitFileFactory) getNewFileFuncs() []cmdgen.NewFileFunc {
 		cmd.NewCmdRunGrpcServerFile, // cmd/run_grpc.go
 		cmd.NewCmdRunHttpServerFile, // cmd/run_http.go
 		cmd.NewCmdRunClientFile,     // cmd/client.go
-		NewMainFile,            // main.go
+		NewMainFile,                 // main.go
 	}
 }
-

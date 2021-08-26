@@ -1,0 +1,1 @@
+dapr run --app-id $1 --app-protocol grpc --components-path ./settings/components --config ./settings/dapr.yaml

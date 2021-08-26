@@ -8,7 +8,8 @@ import (
 )
 
 type framework int
-const(
+
+const (
 	_ framework = iota
 	FRAMEWORK_DAPR
 	FRAMEWORK_GOKIT

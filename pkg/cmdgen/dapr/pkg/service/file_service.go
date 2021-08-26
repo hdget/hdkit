@@ -15,9 +15,8 @@ type ServiceFile struct {
 }
 
 const (
-	DaprService = "DaprService"
+	DaprService     = "DaprService"
 	ServiceFilename = "service.go"
-
 )
 
 func NewServiceFile(meta *generator.Meta) (generator.Generator, error) {
@@ -198,9 +197,6 @@ func (f ServiceFile) genServiceMethods() {
 		f.Builder.NewLine()
 	}
 
-
-
-
 }
 
 // genServiceMethod generate method function as below
@@ -211,8 +207,8 @@ func (f ServiceFile) genServiceMethods() {
 //}
 func (f ServiceFile) getHandlerValues() jen.Dict {
 	return jen.DictFunc(func(d jen.Dict) {
-			for _, method := range f.Meta.SvcServerInterface.Methods {
-				d[jen.Lit(utils.ToLowerSnakeCase(method.Name))] = jen.Nil()
-			}
+		for _, method := range f.Meta.SvcServerInterface.Methods {
+			d[jen.Lit(utils.ToLowerSnakeCase(method.Name))] = jen.Nil()
+		}
 	})
 }
