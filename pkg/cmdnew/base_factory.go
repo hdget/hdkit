@@ -110,8 +110,17 @@ func (factory baseProject) copySettingFiles() error {
 
 	for _, f := range files {
 		bs, _ := data.SettingFs.ReadFile(f)
+
 		relativePath, _ := filepath.Rel(sourceSettingDir, f)
 		destPath := path.Join(targetSettingDir, relativePath)
+
+		// app.local.toml ==> app, local, toml
+		// try change app.local.toml to <app>.local.toml
+		tokens := strings.Split(filepath.Base(destPath), ".")
+		if len(tokens) > 2 && tokens[0] == "app" {
+			destPath = path.Join(filepath.Dir(destPath), fmt.Sprintf("%s.%s.%s", factory.rootDir, tokens[1], tokens[2]))
+			fmt.Println(destPath)
+		}
 		err := g.GetFs().WriteFile(destPath, bs, true)
 		if err != nil {
 			return err
