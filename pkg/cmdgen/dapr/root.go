@@ -48,12 +48,13 @@ func (factory *daprFileFactory) Create() error {
 
 func (factory *daprFileFactory) getNewFileFuncs() []cmdgen.NewFileFunc {
 	return []cmdgen.NewFileFunc{
-		service.NewServiceFile,      // service/service.go
-		g.NewGConfigFile,            // g/config.go
-		cmd.NewCmdRootFile,          // cmd/root.go
-		cmd.NewCmdRunFile,           // cmd/run.go
-		cmd.NewCmdRunGrpcServerFile, // cmd/run_grpc.go
-		cmd.NewCmdRunHttpServerFile, // cmd/run_http.go
-		NewMainFile,                 // main.go
+		service.NewServiceFile,            // service/service.go
+		service.NewInvocationHandlersFile, // service/invocation_handlers.go
+		g.NewGConfigFile,                  // g/config.go
+		cmd.NewCmdRootFile,                // cmd/root.go
+		cmd.NewCmdRunFile,                 // cmd/run.go
+		cmd.NewCmdRunGrpcServerFile,       // cmd/run_grpc.go
+		cmd.NewCmdRunHttpServerFile,       // cmd/run_http.go
+		NewMainFile,                       // main.go
 	}
 }

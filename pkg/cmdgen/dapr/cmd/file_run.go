@@ -16,6 +16,7 @@ type CmdRunFile struct {
 const (
 	RunFilename = "run.go"
 	VarRunCmd   = "runCmd"
+	VarAddress  = "cliAddress"
 )
 
 func NewCmdRunFile(meta *generator.Meta) (generator.Generator, error) {
@@ -51,6 +52,8 @@ func (f CmdRunFile) GetGenCodeFuncs() []func() {
 func (f CmdRunFile) genVar() {
 	found, _ := f.FindVar(VarRunCmd)
 	if found == nil {
+		f.Builder.Raw().Var().Id(VarAddress).String().Line()
+
 		f.Builder.Raw().Var().Id(VarRunCmd).Op("=").Id("&").Qual(g.ImportPaths[g.Cobra], "Command").Values(
 			jen.Dict{
 				jen.Id("Use"):   jen.Lit("run"),
@@ -72,6 +75,10 @@ func (f CmdRunFile) genInitFunc() {
 	found, _ := f.FindMethod("init")
 	if found == nil {
 		body := []jen.Code{
+			jen.Id(VarRunCmd).Dot("PersistentFlags").Call().Dot("StringVarP").Call(
+				jen.Op("&").Id(VarAddress), jen.Lit("address"), jen.Lit("a"), jen.Lit(":8888"), jen.Lit("grpc address, default: ':8888'"),
+			).Line(),
+
 			jen.Id(VarRunCmd).Dot("AddCommand").Call(jen.Id(VarRunGrpcServerCmd)),
 			jen.Id(VarRunCmd).Dot("AddCommand").Call(jen.Id(VarRunHttpServerCmd)),
 		}

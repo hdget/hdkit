@@ -123,7 +123,7 @@ func (f *ServiceFile) genServiceStruct() {
 // var _ pb.XxxServiceServer = (*XxxServiceImpl)(nil)
 func (f *ServiceFile) genVarSvcStructImplService() {
 	f.Builder.Raw().Var().Id("_").Id(DaprService).
-		Op("=").Parens(jen.Op("*").Id(f.Meta.SvcStructName)).Call(jen.Nil()).Line()
+		Op("=").Parens(jen.Op("*").Id(f.Meta.SvcStructName)).Call(jen.Nil()).Line().Line()
 }
 
 func (f ServiceFile) genNewServiceFunction() {
@@ -165,7 +165,10 @@ func (f ServiceFile) genServiceMethods() {
 				jen.Map(jen.String()).Id("InvocationHandler"),
 			},
 			"",
-			jen.Return(jen.Map(jen.String()).Id("InvocationHandler").Values(invocationHandlers)),
+			[]jen.Code{
+				jen.Id("invoke").Op(":=").Id(NewInvocation).Call(),
+				jen.Return(jen.Map(jen.String()).Id("InvocationHandler").Values(invocationHandlers)),
+			}...,
 		)
 		f.Builder.NewLine()
 		f.Builder.NewLine()
@@ -208,7 +211,7 @@ func (f ServiceFile) genServiceMethods() {
 func (f ServiceFile) getHandlerValues() jen.Dict {
 	return jen.DictFunc(func(d jen.Dict) {
 		for _, method := range f.Meta.SvcServerInterface.Methods {
-			d[jen.Lit(utils.ToLowerSnakeCase(method.Name))] = jen.Nil()
+			d[jen.Lit(utils.ToLowerSnakeCase(method.Name))] = jen.Id("invoke").Dot(utils.ToLowerSnakeCase(method.Name) + "Handler")
 		}
 	})
 }

@@ -108,8 +108,8 @@ func (f CmdRunHttpServerFile) genVar() {
 	}
 }
 
-//func runHttpServer(address string) {
-//  server := daprd.NewService(address)
+//func runHttpServer() {
+//  server := daprd.NewService(cliHttpAddress)
 //  if server == nil {
 //    hdsdk.Logger.Fatal("new http service", "error", err)
 //  }
@@ -144,7 +144,7 @@ func (f CmdRunHttpServerFile) genRunServerFunc() {
 	found, _ := f.FindMethod(MethodRunHttpServer)
 	if found == nil {
 		body := []jen.Code{
-			jen.Id("server").Op(":=").Qual(g.ImportPaths[g.DaprHttp], "NewService").Call(jen.Id("address")),
+			jen.Id("server").Op(":=").Qual(g.ImportPaths[g.DaprHttp], "NewService").Call(jen.Id(VarAddress)),
 			jen.If(jen.Id("server").Op("==").Nil()).Block(
 				jen.Qual(g.ImportPaths[g.HdSdk], "Logger").Dot("Fatal").Call(jen.Lit("new http server"), jen.Lit("error"), jen.Lit("error new http server")),
 			),
@@ -191,7 +191,7 @@ func (f CmdRunHttpServerFile) genRunServerFunc() {
 				jen.Qual(g.ImportPaths[g.HdSdk], "Logger").Dot("Fatal").Call(jen.Lit("start http service"), jen.Lit("error"), jen.Id("err")),
 			),
 			jen.Line(),
-			jen.Qual(g.ImportPaths[g.HdSdk], "Logger").Dot("Debug").Call(jen.Lit("start http service"), jen.Lit("address"), jen.Id("address")),
+			jen.Qual(g.ImportPaths[g.HdSdk], "Logger").Dot("Debug").Call(jen.Lit("start http service"), jen.Lit("address"), jen.Id(VarAddress)),
 		}
 
 		f.Builder.AppendFunction(

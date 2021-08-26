@@ -82,7 +82,7 @@ func (f CmdRunGrpcServerFile) genVar() {
 					jen.Id("cmd").Op("*").Qual(g.ImportPaths[g.Cobra], "Command"),
 					jen.Id("args").Index().String(),
 				).Block(
-					jen.Id(MethodRunGprcServer).Call(jen.Id("args").Index(jen.Lit(0))),
+					jen.Id(MethodRunGprcServer).Call(),
 				),
 				jen.Id("PreRun"): jen.Func().Params(
 					jen.Id("cmd").Op("*").Qual(g.ImportPaths[g.Cobra], "Command"),
@@ -104,7 +104,7 @@ func (f CmdRunGrpcServerFile) genVar() {
 	}
 }
 
-//func runGrpcServer(address string) {
+//func runGrpcServer() {
 //  server, err := daprd.NewService(address)
 //  if err != nil {
 //    hdsdk.Logger.Fatal("new dapr service", "error", err)
@@ -140,7 +140,7 @@ func (f CmdRunGrpcServerFile) genRunServerFunc() {
 	found, _ := f.FindMethod(MethodRunGprcServer)
 	if found == nil {
 		body := []jen.Code{
-			jen.List(jen.Id("server"), jen.Err()).Op(":=").Qual(g.ImportPaths[g.DaprGrpc], "NewService").Call(jen.Id("address")),
+			jen.List(jen.Id("server"), jen.Err()).Op(":=").Qual(g.ImportPaths[g.DaprGrpc], "NewService").Call(jen.Id(VarAddress)),
 			jen.If(jen.Err().Op("!=").Nil()).Block(
 				jen.Qual(g.ImportPaths[g.HdSdk], "Logger").Dot("Fatal").Call(jen.Lit("new dapr service"), jen.Lit("error"), jen.Id("err")),
 			),
@@ -187,13 +187,13 @@ func (f CmdRunGrpcServerFile) genRunServerFunc() {
 				jen.Qual(g.ImportPaths[g.HdSdk], "Logger").Dot("Fatal").Call(jen.Lit("start grpc service"), jen.Lit("error"), jen.Id("err")),
 			),
 			jen.Line(),
-			jen.Qual(g.ImportPaths[g.HdSdk], "Logger").Dot("Debug").Call(jen.Lit("start grpc service"), jen.Lit("address"), jen.Id("address")),
+			jen.Qual(g.ImportPaths[g.HdSdk], "Logger").Dot("Debug").Call(jen.Lit("start grpc service"), jen.Lit("address"), jen.Id(VarAddress)),
 		}
 
 		f.Builder.AppendFunction(
 			MethodRunGprcServer,
 			nil,
-			[]jen.Code{jen.Id("address").String()},
+			nil,
 			nil,
 			"",
 			body...,
