@@ -35,10 +35,15 @@ func NewInvocationHandlersFile(meta *generator.Meta) (generator.Generator, error
 
 func (f *InvocationHandlersFile) GetGenCodeFuncs() []func() {
 	return []func(){
+		f.genImports,
 		f.genHandlersStruct,
 		f.genNewHandlersFunc,
 		f.genInvocationHandlers,
 	}
+}
+
+func (f *InvocationHandlersFile) genImports() {
+	f.JenFile.ImportName(g.ImportPaths[g.DaprCommon], "common")
 }
 
 func (f *InvocationHandlersFile) genHandlersStruct() {

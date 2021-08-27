@@ -44,7 +44,7 @@ func (f *ServiceFile) GetGenCodeFuncs() []func() {
 }
 
 func (f *ServiceFile) genImports() {
-	f.JenFile.ImportAlias(g.ImportPaths[g.DaprCommon], "common")
+	f.JenFile.ImportName(g.ImportPaths[g.DaprCommon], "common")
 }
 
 // type InvocationHandler func echoHandler(ctx context.Context, in *common.InvocationEvent) (out *common.Content, err error)
