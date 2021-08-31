@@ -21,17 +21,27 @@ set OUTPUT_DIR=%ROOT_DIR%\%PB_DIR_NAME%
 mkdir %OUTPUT_DIR%
 for /r %ROOT_DIR% %%i in (*.proto) do (
     set absdir=%%i
-    for /f %%j in ('dir /b %%i') do (
-        @REM replace the filename to be empty in abs dir string
-        @REM please use ! in for loop and enabledelayedexpansion
-        set PROTO_DIR=!absdir:%%j=!
-        if exist !PROTO_DIR! (
-            @REM echo proto directory: !PROTO_DIR!
-            @REM echo output directory: !OUTPUT_DIR!
-            echo compiling: %%i
-            protoc -I !PROTO_DIR! --gogofaster_out=plugins=grpc:!OUTPUT_DIR! %%i
-            @REM goto quit
+    @REM ignore gogo\protobuf
+    echo !absdir! | findstr "gogo\protobuf" >nul || (
+        @REM ignore google\api
+        echo !absdir! | findstr "google\api" >nul || (
+            @REM ignore google\protobuf
+            echo !absdir! | findstr "google\protobuf" >nul || (
+                for /f %%j in ('dir /b %%i') do (
+                    @REM replace the filename to be empty in abs dir string
+                    @REM please use ! in for loop and enabledelayedexpansion
+                    set PROTO_DIR=!absdir:%%j=!
+                    if exist !PROTO_DIR! (
+                        @REM echo proto directory: !PROTO_DIR!
+                        @REM echo output directory: !OUTPUT_DIR!
+                        echo compiling: %%i
+                        protoc -I !PROTO_DIR! --gogofaster_out=plugins=grpc:!OUTPUT_DIR! %%i
+                        @REM goto quit
+                    )
+                )
+            )
         )
     )
 )
 :quit
+
