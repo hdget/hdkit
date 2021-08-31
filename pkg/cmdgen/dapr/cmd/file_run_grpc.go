@@ -180,6 +180,7 @@ func (f CmdRunGrpcServerFile) genRunServerFunc() {
 				),
 			),
 			jen.Line(),
+			jen.Qual(g.ImportPaths[g.HdSdk], "Logger").Dot("Debug").Call(jen.Lit("start grpc service"), jen.Lit("address"), jen.Id(VarAddress)),
 			jen.If(
 				jen.Err().Op(":=").Qual("server", "Start").Call(),
 				jen.Err().Op("!=").Nil(),
@@ -187,7 +188,6 @@ func (f CmdRunGrpcServerFile) genRunServerFunc() {
 				jen.Qual(g.ImportPaths[g.HdSdk], "Logger").Dot("Fatal").Call(jen.Lit("start grpc service"), jen.Lit("error"), jen.Id("err")),
 			),
 			jen.Line(),
-			jen.Qual(g.ImportPaths[g.HdSdk], "Logger").Dot("Debug").Call(jen.Lit("start grpc service"), jen.Lit("address"), jen.Id(VarAddress)),
 		}
 
 		f.Builder.AppendFunction(

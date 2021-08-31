@@ -184,6 +184,7 @@ func (f CmdRunHttpServerFile) genRunServerFunc() {
 				),
 			),
 			jen.Line(),
+			jen.Qual(g.ImportPaths[g.HdSdk], "Logger").Dot("Debug").Call(jen.Lit("start http service"), jen.Lit("address"), jen.Id(VarAddress)),
 			jen.If(
 				jen.Err().Op(":=").Qual("server", "Start").Call(),
 				jen.Err().Op("!=").Nil().Op("&&").Err().Op("!=").Qual("net/http", "ErrServerClosed"),
@@ -191,7 +192,6 @@ func (f CmdRunHttpServerFile) genRunServerFunc() {
 				jen.Qual(g.ImportPaths[g.HdSdk], "Logger").Dot("Fatal").Call(jen.Lit("start http service"), jen.Lit("error"), jen.Id("err")),
 			),
 			jen.Line(),
-			jen.Qual(g.ImportPaths[g.HdSdk], "Logger").Dot("Debug").Call(jen.Lit("start http service"), jen.Lit("address"), jen.Id(VarAddress)),
 		}
 
 		f.Builder.AppendFunction(
