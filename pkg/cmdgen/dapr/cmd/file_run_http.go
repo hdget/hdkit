@@ -86,7 +86,7 @@ func (f CmdRunHttpServerFile) genVar() {
 					jen.Id("cmd").Op("*").Qual(g.ImportPaths[g.Cobra], "Command"),
 					jen.Id("args").Index().String(),
 				).Block(
-					jen.Id(MethodRunHttpServer).Call(jen.Id("args").Index(jen.Lit(0))),
+					jen.Id(MethodRunHttpServer).Call(),
 				),
 				jen.Id("PreRun"): jen.Func().Params(
 					jen.Id("cmd").Op("*").Qual(g.ImportPaths[g.Cobra], "Command"),
@@ -197,7 +197,7 @@ func (f CmdRunHttpServerFile) genRunServerFunc() {
 		f.Builder.AppendFunction(
 			MethodRunHttpServer,
 			nil,
-			[]jen.Code{jen.Id("address").String()},
+			nil,
 			nil,
 			"",
 			body...,
