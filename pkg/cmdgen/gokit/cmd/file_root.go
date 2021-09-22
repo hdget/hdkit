@@ -99,8 +99,8 @@ func (f CmdRootFile) genVar() {
 //func init() {
 //	cobra.OnInitialize(loadConfig)
 //
-//	rootCmd.PersistentFlags().StringP("env", "e", "", "running environment, e,g: [prod, sim, pre, test, dev, local]")
-//	rootCmd.PersistentFlags().StringP("config", "c", "", "config file, default: config.toml")
+//	rootCmd.PersistentFlags().StringP("env", "e", "prod", "running environment, e,g: [prod, sim, pre, test, dev, local]")
+//	rootCmd.PersistentFlags().StringP("config", "c", "config.toml", "config file, default: config.toml")
 //	rootCmd.AddCommand(runServerCmd)
 //}
 func (f CmdRootFile) genInitFunc() {
@@ -110,10 +110,10 @@ func (f CmdRootFile) genInitFunc() {
 			jen.Qual(g.ImportPaths[g.Cobra], "OnInitialize").Call(jen.Id("loadConfig")),
 			jen.Line(),
 			jen.Id("rootCmd").Dot("PersistentFlags").Call().Dot("StringVarP").Call(
-				jen.Op("&").Id(VarEnv), jen.Lit("env"), jen.Lit("e"), jen.Lit(""), jen.Lit("running environment, e,g: [prod, sim, pre, test, dev, local]"),
+				jen.Op("&").Id(VarEnv), jen.Lit("env"), jen.Lit("e"), jen.Lit("prod"), jen.Lit("running environment, e,g: [prod, sim, pre, test, dev, local]"),
 			),
 			jen.Id("rootCmd").Dot("PersistentFlags").Call().Dot("StringVarP").Call(
-				jen.Op("&").Id(VarConfigFile), jen.Lit("config"), jen.Lit("c"), jen.Lit(""), jen.Lit("config file, default: config.toml"),
+				jen.Op("&").Id(VarConfigFile), jen.Lit("config"), jen.Lit("c"), jen.Lit("config.toml"), jen.Lit("config file"),
 			),
 			jen.Id("rootCmd").Dot("AddCommand").Call(jen.Id(VarRunCmd)),
 		}
@@ -193,6 +193,15 @@ func (f CmdRootFile) genLoadConfigFunc() {
 			jen.Id("v").Op(":=").Qual(g.ImportPaths[g.HdSdk], "LoadConfig").Call(
 				jen.Id("APP"), jen.Id(VarEnv), jen.Id(VarConfigFile),
 			),
+			jen.If(jen.Id("len").Call(jen.Id("v").Dot("AllKeys").Call()).Op("==").Lit(0).Block(
+				jen.Qual(g.ImportPaths[g.HdUtils], "LogFatal").Call(
+					jen.Lit("load config"),
+					jen.Lit("app"), jen.Id("APP"),
+					jen.Lit("env"), jen.Id("env"),
+					jen.Lit("configFile"), jen.Id("configFile"),
+					jen.Lit("err"), jen.Lit("empty config items"),
+				),
+			)),
 			jen.Line(),
 			jen.Id("err").Op(":=").Id("v").Dot("Unmarshal").Call(jen.Op("&").Qual(f.GlobalDir, "Config")),
 			jen.If(jen.Id("err").Op("!=").Nil().Block(
