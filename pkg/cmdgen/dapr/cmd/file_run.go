@@ -57,8 +57,8 @@ func (f CmdRunFile) genVar() {
 		f.Builder.Raw().Var().Id(VarRunCmd).Op("=").Id("&").Qual(g.ImportPaths[g.Cobra], "Command").Values(
 			jen.Dict{
 				jen.Id("Use"):   jen.Lit("run"),
-				jen.Id("Short"): jen.Lit("run short description"),
-				jen.Id("Long"):  jen.Lit("run long description"),
+				jen.Id("Short"): jen.Lit("run server"),
+				jen.Id("Long"):  jen.Lit("run server, like dapr grpc server, dapr http service or normal http server"),
 			},
 		).Line()
 	}
@@ -76,11 +76,11 @@ func (f CmdRunFile) genInitFunc() {
 	if found == nil {
 		body := []jen.Code{
 			jen.Id(VarRunCmd).Dot("PersistentFlags").Call().Dot("StringVarP").Call(
-				jen.Op("&").Id(VarAddress), jen.Lit("address"), jen.Lit("a"), jen.Lit(":8888"), jen.Lit("grpc address, default: ':8888'"),
+				jen.Op("&").Id(VarAddress), jen.Lit("address"), jen.Lit("d"), jen.Lit(":8888"), jen.Lit("listen address, default: ':8888'"),
 			).Line(),
 
-			jen.Id(VarRunCmd).Dot("AddCommand").Call(jen.Id(VarRunGrpcServerCmd)),
-			jen.Id(VarRunCmd).Dot("AddCommand").Call(jen.Id(VarRunHttpServerCmd)),
+			jen.Id(VarRunCmd).Dot("AddCommand").Call(jen.Id(VarRunDaprGrpcServerCmd)),
+			jen.Id(VarRunCmd).Dot("AddCommand").Call(jen.Id(VarRunGrpcHttpServerCmd)),
 		}
 
 		f.Builder.AppendFunction(

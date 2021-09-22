@@ -12,6 +12,7 @@ const (
 	Binary
 	Proto
 	Global
+	Config
 	Service
 	Pb
 	Grpc
@@ -24,7 +25,8 @@ var (
 	dirTokens = map[DirType][]string{
 		Binary:  []string{"bin"},
 		Proto:   []string{"proto"},
-		Global:  []string{"g"}, // global directory which stores config, error
+		Global:  []string{"g"},    // global directory which stores config, error
+		Config:  []string{"conf"}, // global directory which stores config, error
 		Service: []string{"pkg", "service"},
 		Pb:      []string{"autogen", "pb"},
 		Grpc:    []string{"autogen", "grpc"},

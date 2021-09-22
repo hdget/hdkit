@@ -182,7 +182,7 @@ func (f CmdRootFile) genExecuteFunc() {
 //	// 将配置信息转换成对应的数据结构
 //	err := v.Unmarshal(&g.Config)
 //	if err != nil {
-//		utils.Fatal("msg", "unmarshal config", "err", err)
+//		utils.LogFatal("unmarshal config", "err", err)
 //	}
 //
 //}
@@ -196,7 +196,7 @@ func (f CmdRootFile) genLoadConfigFunc() {
 			jen.Line(),
 			jen.Id("err").Op(":=").Id("v").Dot("Unmarshal").Call(jen.Op("&").Qual(f.GlobalDir, "Config")),
 			jen.If(jen.Id("err").Op("!=").Nil().Block(
-				jen.Qual(g.ImportPaths[g.HdUtils], "Fatal").Call(
+				jen.Qual(g.ImportPaths[g.HdUtils], "LogFatal").Call(
 					jen.Lit("msg"), jen.Lit("unmarshal config"), jen.Lit("err"), jen.Err(),
 				),
 			)),

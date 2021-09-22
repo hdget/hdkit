@@ -4,6 +4,7 @@ import (
 	"github.com/hdget/hdkit/generator"
 	"github.com/hdget/hdkit/pkg/cmdgen"
 	"github.com/hdget/hdkit/pkg/cmdgen/dapr/cmd"
+	"github.com/hdget/hdkit/pkg/cmdgen/dapr/conf"
 	"github.com/hdget/hdkit/pkg/cmdgen/dapr/g"
 	"github.com/hdget/hdkit/pkg/cmdgen/dapr/pkg/service"
 )
@@ -51,10 +52,12 @@ func (factory *daprFileFactory) getNewFileFuncs() []cmdgen.NewFileFunc {
 		service.NewServiceFile,            // service/service.go
 		service.NewInvocationHandlersFile, // service/invocation_handlers.go
 		g.NewGConfigFile,                  // g/config.go
+		conf.NewRootConfigFile,            // conf/root.go
 		cmd.NewCmdRootFile,                // cmd/root.go
 		cmd.NewCmdRunFile,                 // cmd/run.go
-		cmd.NewCmdRunGrpcServerFile,       // cmd/run_grpc.go
-		cmd.NewCmdRunHttpServerFile,       // cmd/run_http.go
+		cmd.NewCmdRunGrpcServerFile,       // cmd/run_dapr_grpc.go
+		cmd.NewCmdRunHttpServerFile,       // cmd/run_dapr_http.go
+		cmd.NewCmdRunNormalHttpServerFile, // cmd/run_http.go
 		NewMainFile,                       // main.go
 	}
 }

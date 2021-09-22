@@ -7,6 +7,7 @@ const (
 	HdSdk
 	HdSdkTypes
 	HdUtils
+	HdWs
 	HdParallel
 	KitEndpoint
 	KitGrpc
@@ -26,6 +27,7 @@ var (
 		HdSdk:       "github.com/hdget/hdsdk",
 		HdSdkTypes:  "github.com/hdget/hdsdk/types",
 		HdUtils:     "github.com/hdget/hdsdk/utils",
+		HdWs:        "github.com/hdget/hdsdk/lib/ws",
 		HdParallel:  "github.com/hdget/hdsdk/utils/parallel",
 		KitEndpoint: "github.com/go-kit/kit/endpoint",
 		KitGrpc:     "github.com/go-kit/kit/transport/grpc",

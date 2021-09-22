@@ -67,7 +67,7 @@ func (f *CmdRunClientFile) genImports() {
 //	PreRun: func(cmd *cobra.Command, args []string) {
 //      err := hdsdk.Initialize(g.Config)
 //      if err != nil {
-//          utils.Fatal("hdsdk initialize", "err", err)
+//          utils.LogFatal("hdsdk initialize", "err", err)
 //      }
 //	},
 //	PostRun: func(cmd *cobra.Command, args []string) {
@@ -88,7 +88,7 @@ func (f CmdRunClientFile) genVar() {
 				).Block(
 					jen.Err().Op(":=").Id(MethodRunClient).Call(),
 					jen.If(jen.Err().Op("!=").Nil()).Block(
-						jen.Qual(g.ImportPaths[g.HdUtils], "Fatal").Call(jen.Lit("run client"), jen.Lit("err"), jen.Err()),
+						jen.Qual(g.ImportPaths[g.HdUtils], "LogFatal").Call(jen.Lit("run client"), jen.Lit("err"), jen.Err()),
 					),
 				),
 				jen.Id("PreRun"): jen.Func().Params(
@@ -97,7 +97,7 @@ func (f CmdRunClientFile) genVar() {
 				).Block(
 					jen.Err().Op(":=").Qual(g.ImportPaths[g.HdSdk], "Initialize").Call(jen.Qual(f.GlobalDir, "Config")),
 					jen.If(jen.Err().Op("!=").Nil()).Block(
-						jen.Qual(g.ImportPaths[g.HdUtils], "Fatal").Call(jen.Lit("sdk initialize"), jen.Lit("err"), jen.Err()),
+						jen.Qual(g.ImportPaths[g.HdUtils], "LogFatal").Call(jen.Lit("sdk initialize"), jen.Lit("err"), jen.Err()),
 					),
 				),
 				jen.Id("PostRun"): jen.Func().Params(

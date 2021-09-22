@@ -6,6 +6,7 @@ import (
 	"github.com/hdget/hdkit/pkg/cmdgen/gokit/autogen/grpc"
 	"github.com/hdget/hdkit/pkg/cmdgen/gokit/autogen/http"
 	"github.com/hdget/hdkit/pkg/cmdgen/gokit/cmd"
+	"github.com/hdget/hdkit/pkg/cmdgen/gokit/conf"
 	"github.com/hdget/hdkit/pkg/cmdgen/gokit/g"
 	service2 "github.com/hdget/hdkit/pkg/cmdgen/gokit/pkg/service"
 )
@@ -85,6 +86,7 @@ func (factory *gokitFileFactory) getNewFileFuncs() []cmdgen.NewFileFunc {
 		grpc.NewClientFile,          // autogen/grpc/client.go
 		http.NewHttpHandlersFile,    // autogen/http/handlers.go
 		g.NewGConfigFile,            // g/config.go
+		conf.NewRootConfigFile,      // conf/root.go
 		cmd.NewCmdRootFile,          // cmd/root.go
 		cmd.NewCmdRunFile,           // cmd/run.go
 		cmd.NewCmdRunGrpcServerFile, // cmd/run_grpc.go

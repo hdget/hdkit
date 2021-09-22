@@ -202,6 +202,7 @@ func getProjectCommonDirs(rootDir string) []string {
 		g.GetDir(rootDir, g.Binary),
 		g.GetDir(rootDir, g.Proto),
 		g.GetDir(rootDir, g.Global),
+		g.GetDir(rootDir, g.Config),
 		g.GetDir(rootDir, g.Service),
 		g.GetDir(rootDir, g.Pb),
 		g.GetDir(rootDir, g.Cmd),
