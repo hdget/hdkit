@@ -113,7 +113,7 @@ func (f CmdRootFile) genInitFunc() {
 				jen.Op("&").Id(VarEnv), jen.Lit("env"), jen.Lit("e"), jen.Lit("prod"), jen.Lit("running environment, e,g: [prod, sim, pre, test, dev, local]"),
 			),
 			jen.Id("rootCmd").Dot("PersistentFlags").Call().Dot("StringVarP").Call(
-				jen.Op("&").Id(VarConfigFile), jen.Lit("config"), jen.Lit("c"), jen.Lit("config.toml"), jen.Lit("config file"),
+				jen.Op("&").Id(VarConfigFile), jen.Lit("config"), jen.Lit("c"), jen.Lit(""), jen.Lit("config file"),
 			),
 			jen.Id("rootCmd").Dot("AddCommand").Call(jen.Id(VarRunCmd)),
 		}
