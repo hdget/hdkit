@@ -107,7 +107,7 @@ func (f CmdRunNormalHttpServerFile) genVar() {
 //func runHttpServer() {
 // ws.SetReleaseMode()
 // srv := ws.NewHttpServer(hdsdk.Logger, cliAddress)
-// srv.SetupRoutes(oidc.NewOidcProvider().GetRoutes())
+// srv.AddRoutes(xxx.GetRoutes())
 // srv.Run()
 //
 //}
@@ -117,7 +117,7 @@ func (f CmdRunNormalHttpServerFile) genRunServerFunc() {
 		body := []jen.Code{
 			jen.Qual(g.ImportPaths[g.HdWs], "SetReleaseMode").Call(),
 			jen.Id("svc").Op(":=").Qual(g.ImportPaths[g.HdWs], "NewHttpServer").Call(jen.Qual(g.ImportPaths[g.HdSdk], "Logger"), jen.Id("cliAddress")),
-			jen.Id("svc").Dot("SetupRoutes").Call(jen.Nil()),
+			jen.Id("svc").Dot("AddRoutes").Call(jen.Nil()),
 			jen.Id("svc").Dot("Run").Call(),
 		}
 
