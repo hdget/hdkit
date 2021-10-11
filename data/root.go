@@ -5,7 +5,7 @@ import "embed"
 var (
 	//go:embed script/*
 	ScriptFs embed.FS
-	//go:embed proto/*
+	//go:embed protobuf/*
 	ProtoFs embed.FS
 	//go:embed setting/*
 	SettingFs embed.FS
