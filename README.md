@@ -35,12 +35,15 @@ Or if you already create a project as described in `Usage` part, you can execute
 
 ### 1. create microservice project
 ```
-hdkit new <framework> <project_name> -p <protobuf_filepath>
+hdkit new  <project_name> -p <protobuf_filepath> -t <framework>
 
 e,g:
-hdkit new dapr example -p example.proto
-hdkit new gokit example -p example.proto
+hdkit new example -p example.proto -t dapr
+hdkit new example -p example.proto -t gokit
 ```
+
+> The framework is `dapr` by default, you can specify to new `gokit` project by `-t` option
+
 - Above command will do following:
  - create project boilerplate
   ```
@@ -69,12 +72,16 @@ hdkit gen pb <project_name> -p <protobuf_filepath>
 
 ### 3. generate microservice code templates
 ```
-hdkit gen <framework> <project>
+hdkit gen <project> -t <framework>
 
 e,g:
-hdkit gen dapr example
-hdkit gen gokit example
+hdkit gen example
+hdkit gen example
 ```
+
+> The framework is `dapr` by default, you can specify to generate `gokit` codes by `-t` option,
+> Also please make sure you new `gokit` project before.
+
 - Firstly, it will try to parse `*.pb.go` files under `<project>/autogen/pb` directory one by one until it find a protobuf `service`
 - Based on found `service`, it will generate following:
   - `<project>/main.go`

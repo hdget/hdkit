@@ -25,26 +25,31 @@ func start(realFactory ProjectFactory) error {
 	// create project dirs
 	err := realFactory.createProjectDirs()
 	if err != nil {
+		fmt.Println(1)
 		return err
 	}
 
 	err = realFactory.copyScriptFiles()
 	if err != nil {
+		fmt.Println(2)
 		return err
 	}
 
 	err = realFactory.copySettingFiles()
 	if err != nil {
+		fmt.Println(3)
 		return err
 	}
 
 	err = realFactory.copy3rdProtoFiles()
 	if err != nil {
+		fmt.Println(4)
 		return err
 	}
 
 	err = realFactory.createGoModuleFile()
 	if err != nil {
+		fmt.Println(5)
 		return err
 	}
 
@@ -64,7 +69,7 @@ func (factory baseProject) createProjectDirs() error {
 
 // create script files under `bin` dir
 func (factory baseProject) copyScriptFiles() error {
-	files, err := iofs.ReadDir(data.ScriptFs, path.Join("script", factory.name))
+	files, err := iofs.ReadDir(data.Script.Fs, path.Join(data.Script.Dir, factory.name))
 	if err != nil {
 		return err
 	}
@@ -77,7 +82,7 @@ func (factory baseProject) copyScriptFiles() error {
 	binaryDir := g.GetDir(factory.rootDir, g.Binary)
 	for _, f := range files {
 		if strings.HasSuffix(f.Name(), fileSuffix) {
-			bs, _ := data.ScriptFs.ReadFile(path.Join("script", factory.name, f.Name()))
+			bs, _ := data.Script.Fs.ReadFile(path.Join(data.Script.Dir, factory.name, f.Name()))
 			err := g.GetFs().WriteFile(path.Join(binaryDir, f.Name()), bs, true)
 			if err != nil {
 				return err
@@ -92,7 +97,7 @@ func (factory baseProject) copyScriptFiles() error {
 func (factory baseProject) copySettingFiles() error {
 	sourceSettingDir := path.Join("setting", factory.name)
 	targetSettingDir := g.GetDir(factory.rootDir, g.Setting)
-	dirs, files, err := utils.TraverseDirFiles(data.SettingFs, sourceSettingDir)
+	dirs, files, err := utils.TraverseDirFiles(data.Setting.Fs, sourceSettingDir)
 	if err != nil {
 		return err
 	}
@@ -109,7 +114,7 @@ func (factory baseProject) copySettingFiles() error {
 	}
 
 	for _, f := range files {
-		bs, _ := data.SettingFs.ReadFile(f)
+		bs, _ := data.Setting.Fs.ReadFile(f)
 
 		relativePath, _ := filepath.Rel(sourceSettingDir, f)
 		destPath := path.Join(targetSettingDir, relativePath)
@@ -131,7 +136,7 @@ func (factory baseProject) copySettingFiles() error {
 
 // create 3rd party proto files under `proto` dir
 func (factory baseProject) copy3rdProtoFiles() error {
-	dirs, files, err := utils.TraverseDirFiles(data.ProtoFs, "proto")
+	dirs, files, err := utils.TraverseDirFiles(data.Proto.Fs, data.Proto.Dir)
 	if err != nil {
 		return err
 	}
@@ -148,7 +153,7 @@ func (factory baseProject) copy3rdProtoFiles() error {
 	for _, f := range files {
 		if strings.HasSuffix(f, ".proto") {
 			destPath := path.Join(factory.rootDir, f)
-			bs, _ := data.ProtoFs.ReadFile(f)
+			bs, _ := data.Proto.Fs.ReadFile(f)
 			if err := g.GetFs().WriteFile(destPath, bs, true); err != nil {
 				return err
 			}

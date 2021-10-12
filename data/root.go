@@ -1,14 +1,36 @@
 package data
 
-import "embed"
+import (
+	"embed"
+)
+
+type EmbedFs struct {
+	Fs  embed.FS
+	Dir string
+}
 
 var (
 	//go:embed script/*
-	ScriptFs embed.FS
-	//go:embed protobuf/*
-	ProtoFs embed.FS
+	scriptFs embed.FS
+	Script   = EmbedFs{
+		Fs:  scriptFs,
+		Dir: "script",
+	}
+
+	//go:embed proto/*
+	protoFs embed.FS
+	Proto   = EmbedFs{
+		Fs:  protoFs,
+		Dir: "proto",
+	}
+
 	//go:embed setting/*
-	SettingFs embed.FS
+	settingFs embed.FS
+	Setting   = EmbedFs{
+		Fs:  settingFs,
+		Dir: "setting",
+	}
+
 	//go:embed message/install_compiler.txt
 	MsgInstallProtoc string
 	//go:embed message/setup_windows.txt

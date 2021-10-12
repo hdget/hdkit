@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 )
 
-var genPbCmd = &cobra.Command{
+var compileProtoCmd = &cobra.Command{
 	Use:   "pb",
 	Short: "generate pb files",
 	Run: func(cmd *cobra.Command, args []string) {

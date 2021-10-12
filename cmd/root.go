@@ -7,17 +7,11 @@ import (
 	"strings"
 )
 
-type framework int
-
-const (
-	_ framework = iota
-	FRAMEWORK_DAPR
-	FRAMEWORK_GOKIT
-)
-
-// pb path specified in cli mode
 var (
+	// pb path specified in cli mode
 	cliProtoPath string
+	// new/gen framework type
+	cliFramework string
 )
 
 // RootCmd is the root command of kit
@@ -42,8 +36,10 @@ func Execute() {
 func init() {
 	RootCmd.AddCommand(newCmd)
 	RootCmd.AddCommand(generateCmd)
+	RootCmd.AddCommand(compileProtoCmd)
 
-	RootCmd.PersistentFlags().StringVarP(&cliProtoPath, "proto_path", "p", "", "Specify protobuf filepath")
+	RootCmd.PersistentFlags().StringVarP(&cliProtoPath, "proto-path", "p", "", "Specify protobuf filepath")
+	generateCmd.PersistentFlags().StringVarP(&cliFramework, "framework", "t", "dapr", "Specify framework type, e,g: dapr, gokit")
 }
 
 func getRootDir(name string) string {
