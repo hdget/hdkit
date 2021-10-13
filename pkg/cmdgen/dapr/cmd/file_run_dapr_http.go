@@ -79,7 +79,7 @@ func (f CmdRunDaprHttpServerFile) genVar() {
 	if found == nil {
 		f.Builder.Raw().Var().Id(VarRunGrpcHttpServerCmd).Op("=").Id("&").Qual(g.ImportPaths[g.Cobra], "Command").Values(
 			jen.Dict{
-				jen.Id("Use"):   jen.Lit("http"),
+				jen.Id("Use"):   jen.Lit("dapr_http"),
 				jen.Id("Short"): jen.Lit("run dapr http server"),
 				jen.Id("Long"):  jen.Lit("run dapr http server"),
 				jen.Id("Run"): jen.Func().Params(

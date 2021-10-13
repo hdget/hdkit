@@ -81,6 +81,7 @@ func (f CmdRunFile) genInitFunc() {
 
 			jen.Id(VarRunCmd).Dot("AddCommand").Call(jen.Id(VarRunDaprGrpcServerCmd)),
 			jen.Id(VarRunCmd).Dot("AddCommand").Call(jen.Id(VarRunGrpcHttpServerCmd)),
+			jen.Id(VarRunCmd).Dot("AddCommand").Call(jen.Id(VarRunNormalHttpServerCmd)),
 		}
 
 		f.Builder.AppendFunction(

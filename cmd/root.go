@@ -14,10 +14,10 @@ var (
 	cliFramework string
 )
 
-// RootCmd is the root command of kit
-var RootCmd = &cobra.Command{
+// rootCmd is the root command of kit
+var rootCmd = &cobra.Command{
 	Use:   "hdkit",
-	Short: "micro service kit",
+	Short: "hd kit",
 	Run: func(cmd *cobra.Command, args []string) {
 		if err := cmd.Help(); err != nil {
 			os.Exit(1)
@@ -27,19 +27,19 @@ var RootCmd = &cobra.Command{
 
 // Execute runs the root command
 func Execute() {
-	if err := RootCmd.Execute(); err != nil {
+	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
 	}
 }
 
 //nolint:errcheck
 func init() {
-	RootCmd.AddCommand(newCmd)
-	RootCmd.AddCommand(generateCmd)
-	RootCmd.AddCommand(compileProtoCmd)
+	rootCmd.AddCommand(newCmd)
+	rootCmd.AddCommand(generateCmd)
+	rootCmd.AddCommand(compileProtoCmd)
 
-	RootCmd.PersistentFlags().StringVarP(&cliProtoPath, "proto-path", "p", "", "Specify protobuf filepath")
-	generateCmd.PersistentFlags().StringVarP(&cliFramework, "framework", "t", "dapr", "Specify framework type, e,g: dapr, gokit")
+	rootCmd.PersistentFlags().StringVarP(&cliProtoPath, "proto-path", "p", "", "Specify protobuf filepath")
+	rootCmd.PersistentFlags().StringVarP(&cliFramework, "framework", "t", "dapr", "Specify framework type, e,g: dapr, gokit")
 }
 
 func getRootDir(name string) string {

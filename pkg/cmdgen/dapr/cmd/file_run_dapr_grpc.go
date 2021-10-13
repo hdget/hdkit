@@ -75,7 +75,7 @@ func (f CmdRunDaprGrpcServerFile) genVar() {
 	if found == nil {
 		f.Builder.Raw().Var().Id(VarRunDaprGrpcServerCmd).Op("=").Id("&").Qual(g.ImportPaths[g.Cobra], "Command").Values(
 			jen.Dict{
-				jen.Id("Use"):   jen.Lit("grpc"),
+				jen.Id("Use"):   jen.Lit("dapr_grpc"),
 				jen.Id("Short"): jen.Lit("run dapr grpc server"),
 				jen.Id("Long"):  jen.Lit("run dapr grpc server"),
 				jen.Id("Run"): jen.Func().Params(
