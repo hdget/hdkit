@@ -149,7 +149,12 @@ func (f CmdRunDaprHttpServerFile) genRunServerFunc() {
 				jen.Qual(g.ImportPaths[g.HdSdk], "Logger").Dot("Fatal").Call(jen.Lit("new http server"), jen.Lit("error"), jen.Lit("error new http server")),
 			),
 			jen.Line(),
-			jen.Id("svc").Op(":=").Qual(f.SvcDir, "New"+f.Meta.RawSvcName).Call(),
+			jen.List(jen.Id("svc"), jen.Err()).Op(":=").Qual(f.SvcDir, "New"+f.Meta.RawSvcName).Call(),
+			jen.If(
+				jen.Err().Op("!=").Nil(),
+			).Block(
+				jen.Qual(g.ImportPaths[g.HdSdk], "Logger").Dot("Fatal").Call(jen.Lit("service initializing"), jen.Lit("error"), jen.Id("err")),
+			),
 			jen.Line(),
 			jen.For(
 				jen.List(jen.Id("url"), jen.Id("handler")).Op(":=").Range().Qual("svc", "GetInvocationHandlers").Call(),

@@ -137,13 +137,16 @@ func (f ServiceFile) genNewServiceFunction() {
 			f.Meta.SvcServerInterfaceName,
 		).Line()
 		body := []jen.Code{
-			jen.Return(jen.Id(fmt.Sprintf("&%s{}", f.Meta.SvcStructName))),
+			jen.Return(
+				jen.Id(fmt.Sprintf("&%s{}", f.Meta.SvcStructName)),
+				jen.Nil(),
+			),
 		}
 		f.Builder.AppendFunction(
 			funcName,
 			nil,
 			[]jen.Code{},
-			[]jen.Code{jen.Id(DaprService)},
+			[]jen.Code{jen.Id(DaprService), jen.Error()},
 			"",
 			body...,
 		)
