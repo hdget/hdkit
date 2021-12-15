@@ -93,7 +93,7 @@ func (f *InvocationHandlersFile) genInvocationHandlers() {
 //	return
 //}
 func (f *InvocationHandlersFile) genInvocationHandler(method parser.Method) {
-	found, _ := f.FindMethod(utils.ToLowerSnakeCase(method.Name) + "Handler")
+	found, _ := f.FindMethod(utils.ToLowerFirstCamelCase(method.Name) + "Handler")
 	if found == nil {
 		body := []jen.Code{
 			jen.Return(
