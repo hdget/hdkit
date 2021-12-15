@@ -214,7 +214,7 @@ func (f ServiceFile) genServiceMethods() {
 func (f ServiceFile) getHandlerValues() jen.Dict {
 	return jen.DictFunc(func(d jen.Dict) {
 		for _, method := range f.Meta.SvcServerInterface.Methods {
-			d[jen.Lit(method.Name)] = jen.Id("invoke").Dot(method.Name + "Handler")
+			d[jen.Lit(method.Name)] = jen.Id("invoke").Dot(utils.ToLowerFirstCamelCase(method.Name) + "Handler")
 		}
 	})
 }
